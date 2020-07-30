@@ -8,7 +8,7 @@ areaSwapping = [None] * 4096 #Area de Swapping
 
 procesosDePagina = {} #Para organizar cada procesos de pagina segun un identificador "p" y por frames
 
-PaginasMenejoSwapp = {} #Para manejo del swap por frames
+paginasManejoSwap = {} #Para manejo del swap por frames
 
 swapsTotales = 0
 fallosDePaginaTotales = 0
@@ -46,15 +46,15 @@ def swap(paginaNueva, procesosNuevo, siguienteFrame):
 
     cargarPaginaSwap(verificadorFrameLibreEnSwap, procesoAnterior, paginaAnterior)
 
-    if procesoAnterior not in PaginasMenejoSwapp:
-        PaginasMenejoSwapp[procesoAnterior] = {}
+    if procesoAnterior not in paginasManejoSwap:
+        paginasManejoSwap[procesoAnterior] = {}
 
-    PaginasMenejoSwapp[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap
+    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap
 
-    del PaginasMenejoSwapp[procesoAnterior][paginaAnterior]
+    del paginasManejoSwap[procesoAnterior][paginaAnterior]
 
     cargarPaginaFrame(siguienteFrame, procesosNuevo, paginaNueva)
-    PaginasMenejoSwapp[procesosNuevo][paginaNueva] = siguienteFrame
+    paginasManejoSwap[procesosNuevo][paginaNueva] = siguienteFrame
     tiempoMedida += 20
 
     return True
@@ -122,3 +122,41 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
 def E():
     print("Se acabaron las instrucciones del programa, adios")
     exit()
+
+def L(p):
+    global procesosDePagina, tiempoMedida, paginasManejoSwap, lruSwap, fifoSwap
+    objetoDeSwap = {}
+    if (procesosDePagina[p] == None):
+        print("No existe el proceso: ",p)
+        return
+    if "tiempoTerminacion" in  procesosDePagina[p]:
+        print("el proceso ya se liberó")
+        return
+    paginas = procesosDePagina[p]
+
+    for key in paginas:
+        if key!= "tiempoInicio":
+            cargarPaginaFrame(paginas[key],None,None)
+    
+    if algoritmo:
+        fifoSwap = [i for i in fifoSwap if i not in paginas.values()]
+    else:
+        lruSwap = [i for i in lruSwap if i not in paginas.values()]
+    
+    framesDePagina = [math.floor(paginas[i]/16) for i in paginas.keys() if i != 'tiempoInicio']
+    print("Se liberaron los marcos de página: ", framesDePagina)
+
+    if p in paginasManejoSwap:
+        objetoDeSwap = paginasManejoSwap[p]
+
+        for key in objetoDeSwap:
+            cargarPaginaSwap(objetoDeSwap[key],None,None)
+        
+        framesDePaginaSwapiados = [math.floor(i/16) for i in objetoDeSwap.values()]
+        print("Los marcos de memoria liberados del area de swapping fueron: ", framesDePaginaSwapiados)
+        del paginasManejoSwap[p]
+        tiempoMedida += (len(paginas) + len(objetoDeSwap) -1)
+
+        procesosDePagina[p]["tiempoTerminacion"] = tiempoMedida
+
+    
