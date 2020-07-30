@@ -10,21 +10,29 @@ procesosDePagina = {} #Para organizar cada procesos de pagina segun un identific
 
 paginasManejoSwap = {} #Para manejo del swap por frames
 
-swapsTotales = 0
-fallosDePaginaTotales = 0
-tiempoMedida = 0
-fifoSwap = []
-lruSwap = []
+swapsTotales = 0 #contador de swaps realizados 
+fallosDePaginaTotales = 0  #contador de fallos de página totales
+tiempoMedida = 0  #variable para medir el tiempo y luego calcular el rendimiento 
+fifoSwap = [] # cola para FIFO 
+lruSwap = [] # cola para LRU
 
+# escogeFrameParaSwap:si es FIFO O LRU, escoge que frame remover de memoria y colocar en swap
 def escojeFrameParaSwap():
-    if(algoritmo): #FIFO
+
+    if(algoritmo): #FIFO = true 
+        #Guarda el siguiente frame de la cola de FIFO
         frameAElegir = fifoSwap.pop()
+        #Lo añade a la cola de swaps de FIFO
         fifoSwap.insert(0, frameAElegir)
     else: #LRU
+        #Guarda el siguiente frame de la cola de LRU
         frameAElegir = lruSwap.pop()
+        #Lo añade a la cola de swaps de LRU
         lruSwap.insert(0, frameAElegir)
-    return frameAElegir
 
+    return frameAElegir 
+
+#verSiEstaLibreEnMemoria: 
 def verSiEstaLibreEnMemoria():
     for i in range(0, 4096, tamañoDePaginas):
         if(areaSwapping[i] == None):
@@ -33,7 +41,7 @@ def verSiEstaLibreEnMemoria():
     return 0
 
 def swap(paginaNueva, procesosNuevo, siguienteFrame):
-    global tiempoMedida, fallosDePaginaTotales
+    global tiempoMedida
 
     procesoAnterior, paginaAnterior = memory[siguienteFrame]
 
@@ -71,7 +79,7 @@ def cargarPaginaFrame(pagina, procesosNuevo, paginaNueva):
         memory[pagina + i] = val
 
 def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
-    global tiempoMedida, swapsTotales, fallosDePaginaTotales
+    global tiempoMedida, swapsTotales
     print("Para la instruccion P asignammos: ", n, "bytes al procesos: ", p)
 
     if p < 0:
