@@ -75,17 +75,26 @@ def swap(paginaNueva, procesosNuevo, siguienteFrame):
     return True
 
 
-
-def cargarPaginaSwap(frameLibre, procesoAnterior, paginaAnterior):
+#cargarPaginaSwap: carga página a memoria swap
+#@pagina: la página a cargar
+#@procesoAnterior: proceso anterior
+#@paginaAnterior: pagina anterior 
+def cargarPaginaSwap(pagina, procesoAnterior, paginaAnterior):
     val = None if procesoAnterior == None and paginaAnterior == None else [procesoAnterior,paginaAnterior]
+    for i in range(0, 16): #16 es el tamaño de página
+        areaSwapping[pagina + i] = val
 
-    for i in range(0, 16):
-        areaSwapping[frameLibre + i] = val
 
-def cargarPaginaFrame(pagina, procesosNuevo, paginaNueva):
+#cargarPaginaFrame: carga frame a memoria 
+#@frameLibre: el frame a cargar
+#@procesoAnterior: proceso anterior
+#@paginaAnterior: pagina anterior 
+def cargarPaginaFrame(frameLibre, procesosNuevo, paginaNueva):
     val = None if procesosNuevo == None and paginaNueva == None else [procesosNuevo, paginaNueva]
-    for i in range(0, 16):
-        memory[pagina + i] = val
+    for i in range(0, 16): #16 es el tamaño de página
+        memory[frameLibre + i] = val
+
+
 
 def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
     global tiempoMedida, swapsTotales
