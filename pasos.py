@@ -94,12 +94,14 @@ def cargarPaginaFrame(frameLibre, procesosNuevo, paginaNueva):
     for i in range(0, 16): #16 es el tamaño de página
         memory[frameLibre + i] = val
 
-
-
+#P: carga un proceso a memoria[]
+#@n: número de bytes 
+#@p: ID del proceso 
 def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
     global tiempoMedida, swapsTotales
-    print("Para la instruccion P asignammos: ", n, "bytes al procesos: ", p)
+    print("Para la instruccion P asignammos: ", n, "bytes al proceso: ", p)
 
+    #Anlizador de casos invaliados 
     if p < 0:
         print("ERROR: no puede haber procesos menores a 0")
         return
@@ -110,43 +112,58 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
         print("ERROR: los bytes a asignar no son validos")
         return
     
-    numeroPaginas = math.ceil(n / tamañoDePaginas)
+    numeroPaginas = math.ceil(n / tamañoDePaginas) #Calcular cuantas páginas son necesarias para cargar el proceso
 
     procesosDePagina[p] = {} 
-    procesosDePagina[p]["tiempoInicio"] = tiempoMedida
+
+    procesosDePagina[p]["tiempoInicio"] = tiempoMedida #Guarda el tiempo de inico del proceso 
     paginaActual = 0
     manejoDeFramesVacios = 0
-    frames = []
+
+    frames = [] #frames usados 
 
     while paginaActual < numeroPaginas:
+
+        #Si no hay frames vacios y el proceso no se a cargado completamente 
         if paginaActual < numeroPaginas and manejoDeFramesVacios >= 2048:
             siguienteFrame = escojeFrameParaSwap()
             cambio = swap(paginaActual, p, siguienteFrame)
 
             if not cambio:
                 return
-            
-            frames.append(math.floor(siguienteFrame/16))
+            #guarda el frame cargado para luego desplegarlo
+            frames.append(math.floor(siguienteFrame/16)) #16 es en número de página
+
+            #Suma al contador de Swaps 
             swapsTotales += 1
             paginaActual += 1
-
-    while manejoDeFramesVacios < 2048:
+    #Encuentra el primer o siguiente frame vacio 
+    while manejoDeFramesVacios < 2048: #Mientras sea menor al tamaño de memoria (2048), guardas el frame
+        #Si en la manejoDeFramesVaciones no hay nada, se guarda el frame 
         if memory[manejoDeFramesVacios] == None:
-            frames.append(math.floor(manejoDeFramesVacios/16))
+            frames.append(math.floor(manejoDeFramesVacios/16)) #guarda el frame cargado para luego desplegarlo
             procesosDePagina[p][paginaActual] = manejoDeFramesVacios
             if algoritmo:
-                fifoSwap.insert(0, siguienteFrame)
+                #FIFO
+                #Si sea usa fifo, se agrega el frame a la cola de fifo
+                fifoSwap.insert(0, siguienteFrame) 
             else:
+                #LRU
+                #Si sea usa lru, se agrega el frame a la cola de lru
                 lruSwap.insert(0, siguienteFrame)
-            cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual)
-            tiempoMedida += 10
-            paginaActual += 1
+            
+            cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual) #Carga este frame
+
+            tiempoMedida += 10 #Suma 1 segundo al tiempo de cargar la página en memoria
+            paginaActual += 1 
             break
-        manejoDeFramesVacios += 16
+
+        manejoDeFramesVacios += 16 #Se mueve el aisugeinte frame (16 bytes)
     print("Marcos de pagina: ", frames,"al proceso: ",p)
 
+#Esta instrucciones acaba el programa 
 def E():
-    print("Se acabaron las instrucciones del programa, adios")
+    print("Se acabaron las instrucciones del programa, adios") #Tiempo de despedida
     exit()
 #L: Libera un espacio de memoria donde se encontraba un proceso
 #@p: El proceso a liberar 
