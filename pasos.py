@@ -148,25 +148,29 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
 def E():
     print("Se acabaron las instrucciones del programa, adios")
     exit()
-
+#L: Libera un espacio de memoria donde se encontraba un proceso
+#@p: El proceso a liberar 
 def L(p):
     global procesosDePagina, tiempoMedida, paginasManejoSwap, lruSwap, fifoSwap
     objetoDeSwap = {}
+    #Revisa si el proceso existe
     if (procesosDePagina[p] == None):
         print("No existe el proceso: ",p)
         return
+    #
     if "tiempoTerminacion" in  procesosDePagina[p]:
         print("el proceso ya se liberó")
         return
+    #Guarda el proceso
     paginas = procesosDePagina[p]
 
     for key in paginas:
         if key!= "tiempoInicio":
             cargarPaginaFrame(paginas[key],None,None)
-    
-    if algoritmo:
+    #Dependiendo del algoritmo utilizado 
+    if algoritmo:#FIFO = true
         fifoSwap = [i for i in fifoSwap if i not in paginas.values()]
-    else:
+    else:#LRU = false
         lruSwap = [i for i in lruSwap if i not in paginas.values()]
     
     framesDePagina = [math.floor(paginas[i]/16) for i in paginas.keys() if i != 'tiempoInicio']
