@@ -167,10 +167,13 @@ def L(p):
     for key in paginas:
         if key!= "tiempoInicio":
             cargarPaginaFrame(paginas[key],None,None)
+            
     #Dependiendo del algoritmo utilizado 
     if algoritmo:#FIFO = true
+        #Liberar la cola de FIFO de los frames del proceso que se quiere liberar sin alterar los demas. 
         fifoSwap = [i for i in fifoSwap if i not in paginas.values()]
     else:#LRU = false
+        #Liberar la cola de LRU de los frames del proceso que se quiere liberar sin alterar los demas.
         lruSwap = [i for i in lruSwap if i not in paginas.values()]
     
     framesDePagina = [math.floor(paginas[i]/16) for i in paginas.keys() if i != 'tiempoInicio']
@@ -185,8 +188,8 @@ def L(p):
         framesDePaginaSwapiados = [math.floor(i/16) for i in objetoDeSwap.values()]
         print("Los marcos de memoria liberados del area de swapping fueron: ", framesDePaginaSwapiados)
         del paginasManejoSwap[p]
-        tiempoMedida += (len(paginas) + len(objetoDeSwap) -1)
+    tiempoMedida += (len(paginas) + len(objetoDeSwap) -1)
 
-        procesosDePagina[p]["tiempoTerminacion"] = tiempoMedida
+    procesosDePagina[p]["tiempoTerminacion"] = tiempoMedida
 
     
