@@ -32,40 +32,49 @@ def escojeFrameParaSwap():
 
     return frameAElegir 
 
-#verSiEstaLibreEnMemoria: 
+#verSiEstaLibreEnMemoria: busca la siguiente página disponible en memoria y la regresa
 def verSiEstaLibreEnMemoria():
+    #Itera de 0 hasta 4096 (tamaño de memoria), dando saltos de 16(tamañoDePaginas)
     for i in range(0, 4096, tamañoDePaginas):
         if(areaSwapping[i] == None):
-            return
-    print("Memoria Swap Llena")
+            return i #página en memoria 
+    print("ERROR: La memoria Swap esta llena")
     return 0
 
+#swap: pone la página del proceso nuevo en la memoria y pone la página actual en el frame correspondiente en el área de swap 
+#@paginaNueva: número de pagina del nuevo frame
+#@procesoNuevo: id del proceso del nuevo frame
+#@siguienteFrame: spacio en memoria que corresponde a donde el nuevo proceso se pondrá 
 def swap(paginaNueva, procesosNuevo, siguienteFrame):
     global tiempoMedida
 
-    procesoAnterior, paginaAnterior = memory[siguienteFrame]
+    procesoAnterior, paginaAnterior = memory[siguienteFrame] #obtine datos del proceso y la página anterior
 
-    verificadorFrameLibreEnSwap = verSiEstaLibreEnMemoria()
+    verificadorFrameLibreEnSwap = verSiEstaLibreEnMemoria() #Encuentra el siguiente frame disponible 
 
     if verificadorFrameLibreEnSwap == 0:
         return False
     
-    print("La Pagina: ", paginaAnterior," del proceso: ",procesoAnterior," haciendo swapping al marco: ",math.floor(verificadorFrameLibreEnSwap/tamañoDePaginas), "del área de swapping")
+    print("La página: ", paginaAnterior," del proceso: ",procesoAnterior," haciendo swapping al marco: ",math.floor(verificadorFrameLibreEnSwap/tamañoDePaginas), "del área de swapping")
 
-    cargarPaginaSwap(verificadorFrameLibreEnSwap, procesoAnterior, paginaAnterior)
+    cargarPaginaSwap(verificadorFrameLibreEnSwap, procesoAnterior, paginaAnterior) #Carga la página swapiada en la memoria Swap
 
-    if procesoAnterior not in paginasManejoSwap:
+    if procesoAnterior not in paginasManejoSwap: #Si el proceso no esta en paginasManejoSwap, entonces la añade
         paginasManejoSwap[procesoAnterior] = {}
 
-    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap
+    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap #Guarda en paginasManejoSwap donde el proceso se guardar en swap
 
-    del paginasManejoSwap[procesoAnterior][paginaAnterior]
+    del paginasManejoSwap[procesoAnterior][paginaAnterior] #Quita los frames pasados de paginasManejoSwap
 
-    cargarPaginaFrame(siguienteFrame, procesosNuevo, paginaNueva)
+    #Carga la página al frame 
+    cargarPaginaFrame(siguienteFrame, procesosNuevo, paginaNueva) 
     paginasManejoSwap[procesosNuevo][paginaNueva] = siguienteFrame
-    tiempoMedida += 20
+
+    tiempoMedida += 20  #incrementa el tiempo 2 segundos 
 
     return True
+
+
 
 def cargarPaginaSwap(frameLibre, procesoAnterior, paginaAnterior):
     val = None if procesoAnterior == None and paginaAnterior == None else [procesoAnterior,paginaAnterior]
