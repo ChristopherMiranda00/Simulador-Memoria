@@ -104,4 +104,21 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
             swapsTotales += 1
             paginaActual += 1
 
-    
+    while manejoDeFramesVacios < 2048:
+        if memory[manejoDeFramesVacios] == None:
+            frames.append(math.floor(manejoDeFramesVacios/16))
+            procesosDePagina[p][paginaActual] = manejoDeFramesVacios
+            if algoritmo:
+                fifoSwap.insert(0, siguienteFrame)
+            else:
+                lruSwap.insert(0, siguienteFrame)
+            cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual)
+            tiempoMedida += 10
+            paginaActual += 1
+            break
+        manejoDeFramesVacios += 16
+    print("Marcos de pagina: ", frames,"al proceso: ",p)
+
+def E():
+    print("Se acabaron las instrucciones del programa, adios")
+    exit()
