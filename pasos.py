@@ -233,8 +233,8 @@ def L(p):
         for key in cambio:
             paginaSwap(cambio[key], None, None)
 
-        swapped_page_frames = [math.floor(i/tamañoDePagina) for i in cambio.values()]
-        print ("Se liberan los marcos", swapped_page_frames, "del área de swapping")
+        cambioPaginasFrames = [math.floor(i/tamañoDePagina) for i in cambio.values()]
+        print ("Se liberan los marcos", cambioPaginasFrames, "del área de swapping")
         del paginasSwap[p]
     tiempoMedida += (len(paginas) + len(cambio) - 1) 
     paginasProcesos[p]["tiempoFinal"] = tiempoMedida
@@ -245,18 +245,18 @@ def E():
 
 def F():
     global paginasProcesos, paginasSwap, lruSwap, fifoSwap, fallosDePagina, swapsTotales, tiempoMedida
-    processes = 0
-    average_turn_around = 0
+    procesosContador = 0
+    turnaroundPromedio = 0
     if len(paginasProcesos) == 0:
         print("No se tienen procesos en memoria.")
         print("No se pueden calcular el reporte de estadísticas.")
         return
      
-    check_values = [i for i in paginasProcesos if "tiempoFinal" not in paginasProcesos[i] ]
-    if len(check_values) > 0:
+    identificador = [i for i in paginasProcesos if "tiempoFinal" not in paginasProcesos[i] ]
+    if len(identificador) > 0:
         print("Liberando procesos que aun siguen corriendo para calcular reporte de estadísticas.")
         print()
-        for key in sorted(check_values):
+        for key in sorted(identificador):
             if "tiempoFinal" not in paginasProcesos[key] :
                 print("L(", key, ")")
                 L(key)
@@ -265,15 +265,15 @@ def F():
     print("Fin. Reporte de salida: ")
     for key in sorted(paginasProcesos.keys()):
 
-        processes += 1
-        current_turn_around = (paginasProcesos[key]["tiempoFinal"] - paginasProcesos[key]["tiempoInicial"])/10
+        procesosContador += 1
+        turnaroundActual = (paginasProcesos[key]["tiempoFinal"] - paginasProcesos[key]["tiempoInicial"])/10
 
-        print("Proceso: ", key, "\t Turnaround time: ", current_turn_around, ".", sep="")
+        print("Proceso: ", key, "\t Turnaround time: ", turnaroundActual, ".", sep="")
         
-        average_turn_around += current_turn_around
+        turnaroundPromedio += turnaroundActual
     
-    average_turn_around = average_turn_around / processes
-    print("Turnaround promedio: ", average_turn_around, sep="")
+    turnaroundPromedio = turnaroundPromedio / procesosContador
+    print("Turnaround promedio: ", turnaroundPromedio, sep="")
     print("Page faults: ", fallosDePagina, sep="")
     print("Operaciones de swap in/swap out: ", swapsTotales, sep="")
     if algoritmo:   
