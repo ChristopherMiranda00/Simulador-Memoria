@@ -61,8 +61,8 @@ def swap(paginaNueva, procesosNuevo, siguienteFrame):
 
     if procesoAnterior not in paginasManejoSwap: #Si el proceso no esta en paginasManejoSwap, entonces la añade
         paginasManejoSwap[procesoAnterior] = {}
-
-    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap #Guarda en paginasManejoSwap donde el proceso se guardar en swap
+    #Guarda en paginasManejoSwap donde el proceso se guardar en swap
+    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap
 
     del paginasManejoSwap[procesoAnterior][paginaAnterior] #Quita los frames pasados de paginasManejoSwap
 
@@ -209,4 +209,79 @@ def L(p):
 
     procesosDePagina[p]["tiempoTerminacion"] = tiempoMedida
 
+def encuentraFrameLibreEnMemoria():
+    for i in range(0,2048,16):
+        if(memory[i]==None):
+            return i
+    print("ERROR: Memoria de Swap llena")
+    return 0
+
+def nuevoLru(pagina):
+    lruSwap.remove(pagina)
+    lruSwap.insert(0,pagina)
+
+#Accede a la memoria virtual del proceso dado
+#@direccionVirtual: la direccion virtual
+#@proceso: id del proceso
+#@m: 0 es leer y 1 es escribir
+def A(direccionVirtual, proceso, m):
+    global swapsTotales, fallosDePaginaTotales, tiempoMedida
+    print("obtiene la direccion virtual: ",direccionVirtual," del proceso dado: ",proceso)
+    if m == 1:
+        print("modifica")
+    else:
+        print("leer")
+    #Analizador de casos que arrojan error
+    if m != 0 and m != 1:
+        print("ERROR: Se ingreso un valor de m diferente de 0 o 1")
+        return
+    if not proceso in procesosDePagina:
+        print("ERROR: No existe el proceso: ",proceso)
+        return
+    if direccionVirtual < 0 or direccionVirtual > len(procesosDePagina[proceso])*16:
+        print("ERROR: La direccion virtual es incorrecta o es demasiado grande")
+        return
     
+    #Direccion Fisica calculo
+    pagina = math.floor(direccionVirtual/16)
+    desplazamiento = int(round(math.modf(direccionVirtual/16), 4) * 16) #Calculo desplazamiento en enteros
+
+    if pagina not in procesosDePagina[proceso]:
+        if pagina not in paginasManejoSwap[proceso]:
+            print("ERROR: No hay direccion asociada al proceso: ",proceso)
+            return 
+
+        fallosDePaginaTotales += 1
+        frameParaSwapiar = encuentraFrameLibreEnMemoria()
+
+        if frameParaSwapiar == 0:
+            frameParaSwapiar = escojeFrameParaSwap()
+            cambio = swap(pagina,proceso,frameParaSwapiar)
+            if not cambio:
+                return
+            swapsTotales += 2
+        else:
+            cargarPaginaFrame(frameParaSwapiar,proceso,pagina)
+            procesosDePagina[proceso][pagina] = frameParaSwapiar
+            tiempoMedida += 11
+            if algoritmo:
+                #FIFO
+                #Si sea usa fifo, se agrega el frame a la cola de fifo
+                fifoSwap.insert(0, frameParaSwapiar) 
+            else:
+                #LRU
+                #Si sea usa lru, se agrega el frame a la cola de lru
+                lruSwap.insert(0, frameParaSwapiar)
+            swapsTotales += 1
+        print("La pagina: ",pagina," del proceso dado: ",proceso," en la posicion: ",paginasManejoSwap[proceso][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
+        paginaEnAreaDeSwap = paginasManejoSwap[proceso][pagina]
+        cargarPaginaSwap(paginaEnAreaDeSwap,None,None)
+        del paginasManejoSwap[proceso][pagina]
+    
+    elif not algoritmo:
+        nuevoLru(procesosDePagina[proceso][pagina])
+    tiempoMedida += 1
+    frame = procesosDePagina[proceso][pagina]
+    direccionReal = frame + desplazamiento
+    print("La direccion Virtual es: ",direccionVirtual)
+    print("La direccion Real es: ",direccionReal)
