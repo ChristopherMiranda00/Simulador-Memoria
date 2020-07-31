@@ -248,15 +248,9 @@ def A(direccionVirtual, p, m):
     fraccion, i = math.modf(direccionVirtual/16)
     desplazamiento = int(round(fraccion, 4) * 16) #Calculo desplazamiento en enteros
 
-<<<<<<< HEAD
-    if pagina not in procesosDePagina[proceso]:
-        if pagina not in paginasManejoSwap[proceso]: #checa que la página exista 
-            print("ERROR: No hay direccion asociada al proceso: ",proceso)
-=======
     if pagina not in procesosDePagina[p]:
-        if pagina not in paginasManejoSwap[p]:
+        if pagina not in paginasManejoSwap[p]:  #checa que la página exista 
             print("ERROR: No hay direccion asociada al proceso: ",p)
->>>>>>> fbdb050314ce108391d464ff2fae88faaffde2e7
             return 
 
         fallosDePaginaTotales += 1 #almacena el fallo de página
@@ -271,16 +265,9 @@ def A(direccionVirtual, p, m):
                 return
             swapsTotales += 2 #añade al contador de swaps
         else:
-<<<<<<< HEAD
-            cargarPaginaFrame(frameParaSwapiar,proceso,pagina)
-            procesosDePagina[proceso][pagina] = frameParaSwapiar
-
-            tiempoMedida += 11 #se suma tiempo de cargar el frame 
-=======
             cargarPaginaFrame(frameParaSwapiar,p,pagina)
             procesosDePagina[p][pagina] = frameParaSwapiar
-            tiempoMedida += 11
->>>>>>> fbdb050314ce108391d464ff2fae88faaffde2e7
+            tiempoMedida += 11 #se suma tiempo de cargar el frame 
             if algoritmo:
                 #FIFO
                 #Si sea usa fifo, se agrega el frame a la cola de fifo
@@ -289,37 +276,18 @@ def A(direccionVirtual, p, m):
                 #LRU
                 #Si sea usa lru, se agrega el frame a la cola de lru
                 lruSwap.insert(0, frameParaSwapiar)
-<<<<<<< HEAD
-
-            swapsTotales += 1 
-
-        print("La pagina: ",pagina," del proceso dado: ",proceso," en la posicion: ",paginasManejoSwap[proceso][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
-
-        #Borra esta pagina de la areaDeSwap
-        paginaEnAreaDeSwap = paginasManejoSwap[proceso][pagina]
-=======
             swapsTotales += 1
         print("La pagina: ",pagina," del proceso dado: ",p," en la posicion: ",paginasManejoSwap[p][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
+        #Borra esta pagina de la areaDeSwap
         paginaEnAreaDeSwap = paginasManejoSwap[p][pagina]
->>>>>>> fbdb050314ce108391d464ff2fae88faaffde2e7
         cargarPaginaSwap(paginaEnAreaDeSwap,None,None)
         del paginasManejoSwap[p][pagina]
     
     elif not algoritmo:
-<<<<<<< HEAD
         #Si la página esta en memoria y se usa el algoritmo lru, entonces se actualiza la cola 
-        nuevoLru(procesosDePagina[proceso][pagina])
-
-
-    tiempoMedida += 1 #Se añade tiempo de escritura y lectura
-
-    #la direccion del frame donde la página se va a guardar
-    frame = procesosDePagina[proceso][pagina]
-=======
         nuevoLru(procesosDePagina[p][pagina])
-    tiempoMedida += 1
-    frame = procesosDePagina[p][pagina]
->>>>>>> fbdb050314ce108391d464ff2fae88faaffde2e7
+    tiempoMedida += 1 #Se añade tiempo de escritura y lectura
+    frame = procesosDePagina[p][pagina] #la direccion del frame donde la página se va a guardar
     direccionReal = frame + desplazamiento
     print("La direccion Virtual es: ",direccionVirtual)
     print("La direccion Real es: ",direccionReal)
