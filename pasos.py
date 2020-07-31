@@ -19,22 +19,20 @@ def encuentraFrameEnSwap():
         if(S[i]==None): return i
 
     print('La memoria de swap está llena. Se requiere más para completar la secuencia de procesos.')
-    print('No se ejecutará esta instrucción.')
     return -1
 
 def encuentraFrameEnMemoria():
     for i in range(0,memoria,tamañoDePagina):
         if(M[i]==None): return i
-
     return -1
 
-def loadPageToFrame(i, process, page):
-    val = None if process == None and page == None else [process,page]
+def loadPageToFrame(i, p, pagina):
+    val = None if p == None and pagina == None else [p,pagina]
     for j in range(0, tamañoDePagina):
         M[i + j] = val
             
-def loadPageToSwap(i, process, page):
-    val = None if process == None and page == None else [process,page]
+def loadPageToSwap(i, p, pagina):
+    val = None if p == None and pagina == None else [p,pagina]
     for j in range(0, tamañoDePagina):
         S[i + j] = val
 
@@ -73,9 +71,9 @@ def chooseNext():
         lruSwap.insert(0, next_frame)
     return next_frame
 
-def updateLRU(page):
-    lruSwap.remove(page)
-    lruSwap.insert(0,page)
+def updateLRU(pagina):
+    lruSwap.remove(pagina)
+    lruSwap.insert(0,pagina)
 
 def A(d, p, m):
     global swapsTotales,tiempoMedida, fallosDePagina
@@ -98,12 +96,12 @@ def A(d, p, m):
         print("No se ejecutará esta instrucción")
         return
 
-    page = math.floor(d / tamañoDePagina)
+    pagina = math.floor(d / tamañoDePagina)
     fraction, whole = math.modf(d / tamañoDePagina)
     disp = int(round(fraction, 4) * 16)
     
-    if page not in paginasProcesos[p]:
-        if page not in paginasSwap[p]:
+    if pagina not in paginasProcesos[p]:
+        if pagina not in paginasSwap[p]:
             print("No existe esa dirección para el proceso ", p)
             print("No se ejecutará esta instrucción")
             return
@@ -114,29 +112,29 @@ def A(d, p, m):
 
         if next_frame == -1:
             next_frame = chooseNext()     
-            swapped = swap(page,p,next_frame)
+            swapped = swap(pagina,p,next_frame)
             if not swapped:
                 return
             swapsTotales += 2
         else:
-            loadPageToFrame(next_frame,p,page)
-            paginasProcesos[p][page] = next_frame
+            loadPageToFrame(next_frame,p,pagina)
+            paginasProcesos[p][pagina] = next_frame
             tiempoMedida += 11
             if algoritmo:
                 fifoSwap.insert(0, next_frame)
             else:
                 lruSwap.insert(0, next_frame)
             swapsTotales += 1
-        print("Se localizó la página ", page, " del proceso ", p, " que estaba en la posición ", paginasSwap[p][page], " y se cargó al marco ", math.floor(next_frame/tamañoDePagina), ".")
-        page_in_swaparea = paginasSwap[p][page]
-        loadPageToSwap(page_in_swaparea,None, None)
-        del paginasSwap[p][page]
+        print("Se localizó la página ", pagina, " del proceso ", p, " que estaba en la posición ", paginasSwap[p][pagina], " y se cargó al marco ", math.floor(next_frame/tamañoDePagina), ".")
+        page_in_swaparea = paginasSwap[p][pagina]
+        loadpaginaToSwap(page_in_swaparea,None, None)
+        del paginasSwap[p][pagina]
 
     elif not algoritmo:
-        updateLRU(paginasProcesos[p][page])
+        updateLRU(paginasProcesos[p][pagina])
 
     tiempoMedida += 1
-    frame = paginasProcesos[p][page]
+    frame = paginasProcesos[p][pagina]
     addr = frame + disp
     print("Dirección virtual: ", d, ". ", end="", sep="")
 
