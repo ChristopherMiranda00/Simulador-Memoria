@@ -26,52 +26,52 @@ def encuentraFrameEnMemoria():
         if(M[i]==None): return i
     return -1
 
-def loadPageToFrame(i, p, pagina):
+def paginaFrame(i, p, pagina):
     val = None if p == None and pagina == None else [p,pagina]
     for j in range(0, tamañoDePagina):
         M[i + j] = val
             
-def loadPageToSwap(i, p, pagina):
+def paginaSwap(i, p, pagina):
     val = None if p == None and pagina == None else [p,pagina]
     for j in range(0, tamañoDePagina):
         S[i + j] = val
 
-def swap(new_page, new_process, next_frame):
+def intercambio(nueva, procesoActualizar, frame):
     global tiempoMedida, fallosDePagina
 
-    old_process, old_page = M[next_frame]
+    procesoAntes, paginaAntes = M[frame]
 
-    available_at_swap = encuentraFrameEnSwap()
-    if available_at_swap == -1:
+    sePuedeHacerSwap = encuentraFrameEnSwap()
+    if sePuedeHacerSwap == -1:
         return False
 
-    print("Página ", old_page, " del proceso ", old_process, " swappeada al marco ", math.floor(available_at_swap/tamañoDePagina), " del área de swapping.")
+    print("Página ", paginaAntes, " del proceso ", procesoAntes, " swappeada al marco ", math.floor(sePuedeHacerSwap/tamañoDePagina), " del área de swapping.")
 
-    loadPageToSwap(available_at_swap, old_process, old_page)
+    paginaSwap(sePuedeHacerSwap, procesoAntes, paginaAntes)
 
-    if old_process not in paginasSwap:
-        paginasSwap[old_process] = {}
+    if procesoAntes not in paginasSwap:
+        paginasSwap[procesoAntes] = {}
 
-    paginasSwap[old_process][old_page] = available_at_swap
+    paginasSwap[procesoAntes][paginaAntes] = sePuedeHacerSwap
 
-    del paginasProcesos[old_process][old_page]
+    del paginasProcesos[procesoAntes][paginaAntes]
 
-    loadPageToFrame(next_frame, new_process, new_page)
-    paginasProcesos[new_process][new_page] = next_frame
+    paginaFrame(frame, procesoActualizar, nueva)
+    paginasProcesos[procesoActualizar][nueva] = frame
     
     tiempoMedida += 20
     return True
 
-def chooseNext():
+def escoje():
     if(algoritmo):
-        next_frame = fifoSwap.pop()
-        fifoSwap.insert(0, next_frame)
+        frame = fifoSwap.pop()
+        fifoSwap.insert(0, frame)
     else:
-        next_frame = lruSwap.pop()
-        lruSwap.insert(0, next_frame)
-    return next_frame
+        frame = lruSwap.pop()
+        lruSwap.insert(0, frame)
+    return frame
 
-def updateLRU(pagina):
+def actualizaLru(pagina):
     lruSwap.remove(pagina)
     lruSwap.insert(0,pagina)
 
@@ -108,30 +108,30 @@ def A(d, p, m):
 
         fallosDePagina += 1
 
-        next_frame = encuentraFrameEnMemoria()
+        frame = encuentraFrameEnMemoria()
 
-        if next_frame == -1:
-            next_frame = chooseNext()     
-            swapped = swap(pagina,p,next_frame)
+        if frame == -1:
+            frame = escoje()     
+            swapped = swap(pagina,p,frame)
             if not swapped:
                 return
             swapsTotales += 2
         else:
-            loadPageToFrame(next_frame,p,pagina)
-            paginasProcesos[p][pagina] = next_frame
+            paginaFrame(frame,p,pagina)
+            paginasProcesos[p][pagina] = frame
             tiempoMedida += 11
             if algoritmo:
-                fifoSwap.insert(0, next_frame)
+                fifoSwap.insert(0, frame)
             else:
-                lruSwap.insert(0, next_frame)
+                lruSwap.insert(0, frame)
             swapsTotales += 1
-        print("Se localizó la página ", pagina, " del proceso ", p, " que estaba en la posición ", paginasSwap[p][pagina], " y se cargó al marco ", math.floor(next_frame/tamañoDePagina), ".")
+        print("Se localizó la página ", pagina, " del proceso ", p, " que estaba en la posición ", paginasSwap[p][pagina], " y se cargó al marco ", math.floor(frame/tamañoDePagina), ".")
         page_in_swaparea = paginasSwap[p][pagina]
-        loadpaginaToSwap(page_in_swaparea,None, None)
+        paginaSwap(page_in_swaparea,None, None)
         del paginasSwap[p][pagina]
 
     elif not algoritmo:
-        updateLRU(paginasProcesos[p][pagina])
+        actualizaLru(paginasProcesos[p][pagina])
 
     tiempoMedida += 1
     frame = paginasProcesos[p][pagina]
@@ -173,13 +173,13 @@ def P(n, p):
 
         if i >= memoria and current_page < num_of_pages:
             
-            next_frame = chooseNext()
+            frame = escoje()
 
-            swapped = swap(current_page,p,next_frame)
+            swapped = intercambio(current_page,p,frame)
             if not swapped:
                 return
             
-            frames.append(math.floor(next_frame/tamañoDePagina))
+            frames.append(math.floor(frame/tamañoDePagina))
 
             swapsTotales += 1
 
@@ -193,7 +193,7 @@ def P(n, p):
                     fifoSwap.insert(0, i)
                 else:
                     lruSwap.insert(0, i)
-                loadPageToFrame(i, p, current_page)
+                paginaFrame(i, p, current_page)
                 tiempoMedida += 10
                 current_page += 1
                 break
@@ -216,7 +216,7 @@ def L(p):
 
     for key in pages:
         if key!= "start_time":
-            loadPageToFrame(pages[key],None, None)
+            paginaFrame(pages[key],None, None)
 
     if algoritmo:
         fifoSwap = [i for i in fifoSwap if i not in pages.values()]
@@ -231,7 +231,7 @@ def L(p):
         swapped = paginasSwap[p]
 
         for key in swapped:
-            loadPageToSwap(swapped[key], None, None)
+            paginaSwap(swapped[key], None, None)
 
         swapped_page_frames = [math.floor(i/tamañoDePagina) for i in swapped.values()]
         print ("Se liberan los marcos", swapped_page_frames, "del área de swapping")
