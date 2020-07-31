@@ -225,27 +225,27 @@ def nuevoLru(pagina):
 #@direccionVirtual: la direccion virtual
 #@proceso: id del proceso
 #@m: 0 es leer y 1 es escribir
-def A(direccionVirtual, p, m):
+def A(d, p, m):
     global swapsTotales, fallosDePaginaTotales, tiempoMedida
-    print("obtiene la direccion virtual: ",direccionVirtual," del proceso dado: ",p)
+    print("obtiene la direccion virtual: ",d," del proceso dado: ",p)
     if m == 1:
         print("modifica")
     else:
         print("leer")
     #Analizador de casos inválidos
-    if m != 0 and m != 1:
-        print("ERROR: Se ingreso un valor de m diferente de 0 o 1")
-        return
     if not p in procesosDePagina:
         print("ERROR: No existe el proceso: ",p)
         return
-    if direccionVirtual < 0 or direccionVirtual > len(procesosDePagina[p])*16:
+    if d < 0 or d > len(procesosDePagina[p])*16:
         print("ERROR: La direccion virtual es incorrecta o es demasiado grande")
+        return
+    if m != 0 and m != 1:
+        print("ERROR: Se ingreso un valor de m diferente de 0 o 1")
         return
     
     #Direccion Fisica calculo
-    pagina = math.floor(direccionVirtual/16)
-    fraccion, i = math.modf(direccionVirtual/16)
+    pagina = math.floor(d/16)
+    fraccion, i = math.modf(d/16)
     desplazamiento = int(round(fraccion, 4) * 16) #Calculo desplazamiento en enteros
 
     if pagina not in procesosDePagina[p]:
@@ -286,10 +286,11 @@ def A(direccionVirtual, p, m):
     elif not algoritmo:
         #Si la página esta en memoria y se usa el algoritmo lru, entonces se actualiza la cola 
         nuevoLru(procesosDePagina[p][pagina])
+
     tiempoMedida += 1 #Se añade tiempo de escritura y lectura
     frame = procesosDePagina[p][pagina] #la direccion del frame donde la página se va a guardar
     direccionReal = frame + desplazamiento
-    print("La direccion Virtual es: ",direccionVirtual)
+    print("La direccion Virtual es: ",d)
     print("La direccion Real es: ",direccionReal)
 
 def F():
