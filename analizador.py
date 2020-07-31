@@ -15,7 +15,7 @@ def instrucciones():
         #Lee el arhivo y lo separa en lineas 
         filas = file.read().splitlines()
 
-        for fila in enumerate(filas):
+        for i, fila in enumerate(filas):
             secciones = ' '.join(fila.split()).split(' ') #Separa la linea en secciones para despues convertir cada seccion a su formato
             if secciones[0] == 'A': #La primera palabra es la instruccion A?
                 if(len(secciones) != 4): #A solo puede tener 4 palabras "A d p m"

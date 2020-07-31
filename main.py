@@ -9,7 +9,7 @@ def main():
         exit()
     print('Usando: ', sys.argv[1])
     #True es FIFO y FALSE es LRU
-    pasos.STRATEGY = True if sys.argv[1] == 'fifo' else False
+    pasos.algoritmo = True if sys.argv[1] == 'fifo' else False
     #Lista de instrucciones
     lista = instrucciones()
     for paso in lista:

@@ -138,27 +138,27 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
             swapsTotales += 1
             paginaActual += 1
     #Encuentra el primer o siguiente frame vacio 
-    while manejoDeFramesVacios < 2048: #Mientras sea menor al tamaño de memoria (2048), guardas el frame
+        while manejoDeFramesVacios < 2048: #Mientras sea menor al tamaño de memoria (2048), guardas el frame
         #Si en la manejoDeFramesVaciones no hay nada, se guarda el frame 
-        if memory[manejoDeFramesVacios] == None:
-            frames.append(math.floor(manejoDeFramesVacios/16)) #guarda el frame cargado para luego desplegarlo
-            procesosDePagina[p][paginaActual] = manejoDeFramesVacios
-            if algoritmo:
+            if memory[manejoDeFramesVacios] == None:
+                frames.append(math.floor(manejoDeFramesVacios/16)) #guarda el frame cargado para luego desplegarlo
+                procesosDePagina[p][paginaActual] = manejoDeFramesVacios
+                if algoritmo:
                 #FIFO
                 #Si sea usa fifo, se agrega el frame a la cola de fifo
-                fifoSwap.insert(0, siguienteFrame) 
-            else:
+                    fifoSwap.insert(0, manejoDeFramesVacios) 
+                else:
                 #LRU
                 #Si sea usa lru, se agrega el frame a la cola de lru
-                lruSwap.insert(0, siguienteFrame)
+                    lruSwap.insert(0, manejoDeFramesVacios)
             
-            cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual) #Carga este frame
+                cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual) #Carga este frame
 
-            tiempoMedida += 10 #Suma 1 segundo al tiempo de cargar la página en memoria
-            paginaActual += 1 
-            break
+                tiempoMedida += 10 #Suma 1 segundo al tiempo de cargar la página en memoria
+                paginaActual += 1 
+                break
 
-        manejoDeFramesVacios += 16 #Se mueve el aisugeinte frame (16 bytes)
+            manejoDeFramesVacios += 16 #Se mueve el aisugeinte frame (16 bytes)
     print("Marcos de pagina: ", frames,"al proceso: ",p)
 
 #Esta instrucciones acaba el programa 
@@ -224,9 +224,9 @@ def nuevoLru(pagina):
 #@direccionVirtual: la direccion virtual
 #@proceso: id del proceso
 #@m: 0 es leer y 1 es escribir
-def A(direccionVirtual, proceso, m):
+def A(direccionVirtual, p, m):
     global swapsTotales, fallosDePaginaTotales, tiempoMedida
-    print("obtiene la direccion virtual: ",direccionVirtual," del proceso dado: ",proceso)
+    print("obtiene la direccion virtual: ",direccionVirtual," del proceso dado: ",p)
     if m == 1:
         print("modifica")
     else:
@@ -235,20 +235,21 @@ def A(direccionVirtual, proceso, m):
     if m != 0 and m != 1:
         print("ERROR: Se ingreso un valor de m diferente de 0 o 1")
         return
-    if not proceso in procesosDePagina:
-        print("ERROR: No existe el proceso: ",proceso)
+    if not p in procesosDePagina:
+        print("ERROR: No existe el proceso: ",p)
         return
-    if direccionVirtual < 0 or direccionVirtual > len(procesosDePagina[proceso])*16:
+    if direccionVirtual < 0 or direccionVirtual > len(procesosDePagina[p])*16:
         print("ERROR: La direccion virtual es incorrecta o es demasiado grande")
         return
     
     #Direccion Fisica calculo
     pagina = math.floor(direccionVirtual/16)
-    desplazamiento = int(round(math.modf(direccionVirtual/16), 4) * 16) #Calculo desplazamiento en enteros
+    fraccion, i = math.modf(direccionVirtual/16)
+    desplazamiento = int(round(fraccion, 4) * 16) #Calculo desplazamiento en enteros
 
-    if pagina not in procesosDePagina[proceso]:
-        if pagina not in paginasManejoSwap[proceso]:
-            print("ERROR: No hay direccion asociada al proceso: ",proceso)
+    if pagina not in procesosDePagina[p]:
+        if pagina not in paginasManejoSwap[p]:
+            print("ERROR: No hay direccion asociada al proceso: ",p)
             return 
 
         fallosDePaginaTotales += 1
@@ -256,13 +257,13 @@ def A(direccionVirtual, proceso, m):
 
         if frameParaSwapiar == 0:
             frameParaSwapiar = escojeFrameParaSwap()
-            cambio = swap(pagina,proceso,frameParaSwapiar)
+            cambio = swap(pagina,p,frameParaSwapiar)
             if not cambio:
                 return
             swapsTotales += 2
         else:
-            cargarPaginaFrame(frameParaSwapiar,proceso,pagina)
-            procesosDePagina[proceso][pagina] = frameParaSwapiar
+            cargarPaginaFrame(frameParaSwapiar,p,pagina)
+            procesosDePagina[p][pagina] = frameParaSwapiar
             tiempoMedida += 11
             if algoritmo:
                 #FIFO
@@ -273,15 +274,15 @@ def A(direccionVirtual, proceso, m):
                 #Si sea usa lru, se agrega el frame a la cola de lru
                 lruSwap.insert(0, frameParaSwapiar)
             swapsTotales += 1
-        print("La pagina: ",pagina," del proceso dado: ",proceso," en la posicion: ",paginasManejoSwap[proceso][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
-        paginaEnAreaDeSwap = paginasManejoSwap[proceso][pagina]
+        print("La pagina: ",pagina," del proceso dado: ",p," en la posicion: ",paginasManejoSwap[p][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
+        paginaEnAreaDeSwap = paginasManejoSwap[p][pagina]
         cargarPaginaSwap(paginaEnAreaDeSwap,None,None)
-        del paginasManejoSwap[proceso][pagina]
+        del paginasManejoSwap[p][pagina]
     
     elif not algoritmo:
-        nuevoLru(procesosDePagina[proceso][pagina])
+        nuevoLru(procesosDePagina[p][pagina])
     tiempoMedida += 1
-    frame = procesosDePagina[proceso][pagina]
+    frame = procesosDePagina[p][pagina]
     direccionReal = frame + desplazamiento
     print("La direccion Virtual es: ",direccionVirtual)
     print("La direccion Real es: ",direccionReal)
