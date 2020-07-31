@@ -1,359 +1,428 @@
 import math
 
-tamañoDePaginas = 16 #Paginacion de 16
-algoritmo = True #FIFO por Default
+memoria = 2048
+memoriaSwap = 4096
+tamañoDePagina = 16
+algoritmo = False 
+M = [None] * memoria
 
-memory = [None] * 2048 #Area de memoria
-areaSwapping = [None] * 4096 #Area de Swapping
+S = [None] * memoriaSwap
 
-procesosDePagina = {} #Para organizar cada procesos de pagina segun un identificador "p" y por frames
+paginasProcesos = {}
 
-paginasManejoSwap = {} #Para manejo del swap por frames
+swapped_pages = {}
 
-swapsTotales = 0 #contador de swaps realizados 
-fallosDePaginaTotales = 0  #contador de fallos de página totales
-tiempoMedida = 0  #variable para medir el tiempo y luego calcular el rendimiento 
-fifoSwap = [] # cola para FIFO 
-lruSwap = [] # cola para LRU
+# Queue of pages used for FIFO Strategy
+fifo_next_swap = []
 
-# escogeFrameParaSwap:si es FIFO O LRU, escoge que frame remover de memoria y colocar en swap
-def escojeFrameParaSwap():
+# Queue of pages used for LRU Strategy
+lru_next_swap = []
 
-    if(algoritmo): #FIFO = true 
-        #Guarda el siguiente frame de la cola de FIFO
-        frameAElegir = fifoSwap.pop()
-        #Lo añade a la cola de swaps de FIFO
-        fifoSwap.insert(0, frameAElegir)
-    else: #LRU
-        #Guarda el siguiente frame de la cola de LRU
-        frameAElegir = lruSwap.pop()
-        #Lo añade a la cola de swaps de LRU
-        lruSwap.insert(0, frameAElegir)
+# Current time for measurments (measured in 10ths of a second due to problems with python and floating point sums)
+current_time = 0
 
-    return frameAElegir 
+# Amount of page faults that have occured
+page_faults = 0
 
-#verSiEstaLibreEnMemoria: busca la siguiente página disponible en memoria y la regresa
-def verSiEstaLibreEnMemoria():
-    #Itera de 0 hasta 4096 (tamaño de memoria), dando saltos de 16(tamañoDePaginas)
-    for i in range(0, 4096, tamañoDePaginas):
-        if(areaSwapping[i] == None):
-            return i #página en memoria 
-    print("ERROR: La memoria Swap esta llena")
-    return 0
+# Amount of swap in / swap out operations
+total_swaps = 0
 
-#swap: pone la página del proceso nuevo en la memoria y pone la página actual en el frame correspondiente en el área de swap 
-#@paginaNueva: número de pagina del nuevo frame
-#@procesoNuevo: id del proceso del nuevo frame
-#@siguienteFrame: spacio en memoria que corresponde a donde el nuevo proceso se pondrá 
-def swap(paginaNueva, procesosNuevo, siguienteFrame):
-    global tiempoMedida
+# Finds next available page in swap memory, and returns it
+def findAvailableFrameInSwapMemory():
+    for i in range(0,SWAP_memoria,tamañoDePagina):
+        if(S[i]==None): return i
 
-    procesoAnterior, paginaAnterior = memory[siguienteFrame] #obtine datos del proceso y la página anterior
+    print('La memoria de swap está llena. Se requiere más para completar la secuencia de procesos.')
+    print('No se ejecutará esta instrucción.')
+    return -1
 
-    verificadorFrameLibreEnSwap = verSiEstaLibreEnMemoria() #Encuentra el siguiente frame disponible 
 
-    if verificadorFrameLibreEnSwap == 0:
+# Finds next available page in memory, and returns it
+def findAvailableFrameInMemory():
+    for i in range(0,memoria,tamañoDePagina):
+        if(M[i]==None): return i
+
+    return -1
+
+
+# Loads page i with values val to memory
+# i: page
+# val: process or value to set
+def loadPageToFrame(i, process, page):
+    val = None if process == None and page == None else [process,page]
+    for j in range(0, tamañoDePagina):
+        M[i + j] = val
+            
+
+# Loads page i with values val to swap memory
+# i: page
+# val: process or value to set
+def loadPageToSwap(i, process, page):
+    val = None if process == None and page == None else [process,page]
+    for j in range(0, tamañoDePagina):
+        S[i + j] = val
+
+
+# Puts the new process's new page into memory, in the next frame's current 
+#  space of memory, and puts the current page in that frame into the swap area
+# new_page: page number of the new frame
+# new_process: process id of the new frame
+# next_frame: space in memory that corresponds to where the new process will be placed
+def swap(new_page, new_process, next_frame):
+    global current_time, page_faults
+
+    # Get info of the previous process and its page at that space in memory
+    old_process, old_page = M[next_frame]
+
+
+    # Find next available frame in swap memory
+    available_at_swap = findAvailableFrameInSwapMemory()
+    if available_at_swap == -1:
         return False
+
+    print("Página ", old_page, " del proceso ", old_process, " swappeada al marco ", math.floor(available_at_swap/tamañoDePagina), " del área de swapping.")
+    # Load swapped page to swap memory
+    loadPageToSwap(available_at_swap, old_process, old_page)
+
+    # If process is not already in swapped_pages, add it
+    if old_process not in swapped_pages:
+        swapped_pages[old_process] = {}
+
+    # Store in swapped_pages where the process will be stored in swap
+    swapped_pages[old_process][old_page] = available_at_swap
+
+    # Remove old frame from proc_pages
+    del paginasProcesos[old_process][old_page]
+
+    # Load page to the frame
+    loadPageToFrame(next_frame, new_process, new_page)
+    paginasProcesos[new_process][new_page] = next_frame
     
-    print("La página: ", paginaAnterior," del proceso: ",procesoAnterior," haciendo swapping al marco: ",math.floor(verificadorFrameLibreEnSwap/tamañoDePaginas), "del área de swapping")
-
-    cargarPaginaSwap(verificadorFrameLibreEnSwap, procesoAnterior, paginaAnterior) #Carga la página swapiada en la memoria Swap
-
-    if procesoAnterior not in paginasManejoSwap: #Si el proceso no esta en paginasManejoSwap, entonces la añade
-        paginasManejoSwap[procesoAnterior] = {}
-    #Guarda en paginasManejoSwap donde el proceso se guardar en swap
-    paginasManejoSwap[procesoAnterior][paginaAnterior] = verificadorFrameLibreEnSwap
-
-    del paginasManejoSwap[procesoAnterior][paginaAnterior] #Quita los frames pasados de paginasManejoSwap
-
-    #Carga la página al frame 
-    cargarPaginaFrame(siguienteFrame, procesosNuevo, paginaNueva) 
-    paginasManejoSwap[procesosNuevo][paginaNueva] = siguienteFrame
-
-    tiempoMedida += 20  #incrementa el tiempo 2 segundos 
-
+    # Update current time, 2 seconds passed due to writing both to memory and swap
+    current_time += 20
     return True
 
 
-#cargarPaginaSwap: carga página a memoria swap
-#@pagina: la página a cargar
-#@procesoAnterior: proceso anterior
-#@paginaAnterior: pagina anterior 
-def cargarPaginaSwap(pagina, procesoAnterior, paginaAnterior):
-    val = None if procesoAnterior == None and paginaAnterior == None else [procesoAnterior,paginaAnterior]
-    for i in range(0, 16): #16 es el tamaño de página
-        areaSwapping[pagina + i] = val
-
-
-#cargarPaginaFrame: carga frame a memoria 
-#@frameLibre: el frame a cargar
-#@procesoAnterior: proceso anterior
-#@paginaAnterior: pagina anterior 
-def cargarPaginaFrame(frameLibre, procesosNuevo, paginaNueva):
-    val = None if procesosNuevo == None and paginaNueva == None else [procesosNuevo, paginaNueva]
-    for i in range(0, 16): #16 es el tamaño de página
-        memory[frameLibre + i] = val
-
-#P: carga un proceso a memoria[]
-#@n: número de bytes 
-#@p: ID del proceso 
-def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
-    global tiempoMedida, swapsTotales
-    print("Para la instruccion P asignammos: ", n, "bytes al proceso: ", p)
-
-    #Anlizador de casos invaliados 
-    if p < 0:
-        print("ERROR: no puede haber procesos menores a 0")
-        return
-    if p in procesosDePagina:
-        print("Ese procesos ya existe")
-        return
-    if (n <= 0 or n > 2048):
-        print("ERROR: los bytes a asignar no son validos")
-        return
-    
-    numeroPaginas = math.ceil(n / tamañoDePaginas) #Calcular cuantas páginas son necesarias para cargar el proceso
-
-    procesosDePagina[p] = {} 
-
-    procesosDePagina[p]["tiempoInicio"] = tiempoMedida #Guarda el tiempo de inico del proceso 
-    paginaActual = 0
-    manejoDeFramesVacios = 0
-
-    frames = [] #frames usados 
-
-    while paginaActual < numeroPaginas:
-
-        #Si no hay frames vacios y el proceso no se a cargado completamente 
-        if paginaActual < numeroPaginas and manejoDeFramesVacios >= 2048:
-            siguienteFrame = escojeFrameParaSwap()
-            cambio = swap(paginaActual, p, siguienteFrame)
-
-            if not cambio:
-                return
-            #guarda el frame cargado para luego desplegarlo
-            frames.append(math.floor(siguienteFrame/16)) #16 es en número de página
-
-            #Suma al contador de Swaps 
-            swapsTotales += 1
-            paginaActual += 1
-    #Encuentra el primer o siguiente frame vacio 
-        while manejoDeFramesVacios < 2048: #Mientras sea menor al tamaño de memoria (2048), guardas el frame
-        #Si en la manejoDeFramesVaciones no hay nada, se guarda el frame 
-            if memory[manejoDeFramesVacios] == None:
-                frames.append(math.floor(manejoDeFramesVacios/16)) #guarda el frame cargado para luego desplegarlo
-                procesosDePagina[p][paginaActual] = manejoDeFramesVacios
-                if algoritmo:
-                #FIFO
-                #Si sea usa fifo, se agrega el frame a la cola de fifo
-                    fifoSwap.insert(0, manejoDeFramesVacios) 
-                else:
-                #LRU
-                #Si sea usa lru, se agrega el frame a la cola de lru
-                    lruSwap.insert(0, manejoDeFramesVacios)
-            
-                cargarPaginaFrame(manejoDeFramesVacios, p, paginaActual) #Carga este frame
-
-                tiempoMedida += 10 #Suma 1 segundo al tiempo de cargar la página en memoria
-                paginaActual += 1 
-                break
-
-            manejoDeFramesVacios += 16 #Se mueve el aisugeinte frame (16 bytes)
-    print("Marcos de pagina: ", frames,"al proceso: ",p)
-
-#Esta instrucciones acaba el programa 
-def E():
-    print("Se acabaron las instrucciones del programa, vuelva pronto") #Tiempo de despedida
-    exit()
-
-#L: Libera un espacio de memoria donde se encontraba un proceso
-#@p: El proceso a liberar 
-def L(p):
-    global procesosDePagina, tiempoMedida, paginasManejoSwap, lruSwap, fifoSwap
-    objetoDeSwap = {}
-    #Revisa si el proceso existe
-    if (procesosDePagina[p] == None):
-        print("No existe el proceso: ",p)
-        return
-    if "tiempoTerminacion" in  procesosDePagina[p]:
-        print("el proceso ya se liberó")
-        return
-
-    #Guarda el proceso
-    paginas = procesosDePagina[p]
-
-    for key in paginas:
-        if key!= "tiempoInicio":
-            cargarPaginaFrame(paginas[key],None,None)
-            
-    #Dependiendo del algoritmo utilizado 
-    if algoritmo:#FIFO = true
-        #Liberar la cola de FIFO de los frames del proceso que se quiere liberar sin alterar los demas. 
-        fifoSwap = [i for i in fifoSwap if i not in paginas.values()]
-    else:#LRU = false
-        #Liberar la cola de LRU de los frames del proceso que se quiere liberar sin alterar los demas.
-        lruSwap = [i for i in lruSwap if i not in paginas.values()]
-    
-    framesDePagina = [math.floor(paginas[i]/16) for i in paginas.keys() if i != 'tiempoInicio']
-    print("Se liberaron los marcos de página: ", framesDePagina)
-
-    if p in paginasManejoSwap:
-        objetoDeSwap = paginasManejoSwap[p]
-
-        for key in objetoDeSwap:
-            cargarPaginaSwap(objetoDeSwap[key],None,None)
-        
-        framesDePaginaSwapiados = [math.floor(i/16) for i in objetoDeSwap.values()]
-        print("Los marcos de memoria liberados del area de swapping fueron: ", framesDePaginaSwapiados)
-        del paginasManejoSwap[p]
-    tiempoMedida += (len(paginas) + len(objetoDeSwap) -1)
-
-    procesosDePagina[p]["tiempoTerminacion"] = tiempoMedida
-
-def encuentraFrameLibreEnMemoria():
-    for i in range(0,2048,16):
-        if(memory[i]==None):
-            return i
-    print("ERROR: Memoria de Swap llena")
-    return 0
-
-def nuevoLru(pagina):
-    lruSwap.remove(pagina)
-    lruSwap.insert(0,pagina)
-
-#Accede a la memoria virtual del proceso dado
-#@direccionVirtual: la direccion virtual
-#@proceso: id del proceso
-#@m: 0 es leer y 1 es escribir
-def A(d, p, m):
-    global swapsTotales, fallosDePaginaTotales, tiempoMedida
-    print("obtiene la direccion virtual: ",d," del proceso dado: ",p)
-    if m == 1:
-        print("modifica")
+# Uses strategy to choose which frame to remove from memory and place to swap
+def chooseNext():
+    # Choose which frame to use next
+    if(algoritmo):
+        # FIFO
+        # Get next frame to be swapped, and the process it corresponds to
+        next_frame = fifo_next_swap.pop()
+        # Add it back to queue, since it will be reused
+        fifo_next_swap.insert(0, next_frame)
     else:
-        print("leer")
-    #Analizador de casos inválidos
-    if not p in procesosDePagina:
-        print("ERROR: No existe el proceso: ",p)
+        # LRU
+        # Get next frame to be swapped, and the process it corresponds to
+        next_frame = lru_next_swap.pop()
+        # Add it back to queue, since it will be reused
+        lru_next_swap.insert(0, next_frame)
+    return next_frame
+
+
+# Updates an exsiting entry in the lru queue, placing it to the end of the queue
+def updateLRU(page):
+    lru_next_swap.remove(page)
+    lru_next_swap.insert(0,page)
+
+
+# Access virtual address "d" of process "p".
+# d: virtual address (0 <= d <= max virtual address of "p")
+# p: process ID
+# m: mode (0 - read only, 1 - write)
+def A(d, p, m):
+    global total_swaps,current_time, page_faults
+    print("Obtener la dirección real correspondiente a la dirección virtual", d, "del proceso", p, end="")
+    if m == 1:
+        print(" y modificar dicha dirección")
+    else:
+        print()
+
+    # Handle invalid cases
+    if not p in paginasProcesos:
+        print("Error: no existe el proceso ", p, ".", sep="")
+        print("No se ejecutará esta instrucción")
         return
-    if d < 0 or d > len(procesosDePagina[p])*16:
-        print("ERROR: La direccion virtual es incorrecta o es demasiado grande")
+    if d < 0 or d > len(paginasProcesos[p]) * tamañoDePagina:
+        print("Error: la dirección virtual está fuera del rango de direcciones del proceso ", p, ".", sep="")
+        print("No se ejecutará esta instrucción")
         return
     if m != 0 and m != 1:
-        print("ERROR: Se ingreso un valor de m diferente de 0 o 1")
+        print("Error: el modo de acceso debe ser 0 (lectura) o 1 (escritura).")
+        print("No se ejecutará esta instrucción")
+        return
+
+    # Calculate the physical address.
+    # The page number of the process (e.g. 0, 1, 2...)
+    page = math.floor(d / tamañoDePagina)
+    # The displacement from the start of the page.
+    fraction, whole = math.modf(d / tamañoDePagina)
+    disp = int(round(fraction, 4) * 16)
+    
+    if page not in paginasProcesos[p]:
+        # Checks that page exists first
+        if page not in swapped_pages[p]:
+            print("No existe esa dirección para el proceso ", p)
+            print("No se ejecutará esta instrucción")
+            return
+
+        # page is in the swapping area
+        # choose next frame to swap and swap it
+
+        # Store page fault
+        page_faults += 1
+
+        # Check first if there is free memory
+        next_frame = findAvailableFrameInMemory()
+
+        # If no memory is free, choose which to swap
+        if next_frame == -1:
+            next_frame = chooseNext()     
+            swapped = swap(page,p,next_frame)
+            if not swapped:
+                return
+            # Adds a swap out and a swap in to the stored count
+            total_swaps += 2
+        else:
+            loadPageToFrame(next_frame,p,page)
+            paginasProcesos[p][page] = next_frame
+            # Add time to load page to frame and off  
+            current_time += 11
+            if algoritmo:
+                # FIFO
+                fifo_next_swap.insert(0, next_frame)
+            else:
+                # LRU
+                lru_next_swap.insert(0, next_frame)
+            # Since only moving out of swap, only a swap out is counted 
+            total_swaps += 1
+        print("Se localizó la página ", page, " del proceso ", p, " que estaba en la posición ", swapped_pages[p][page], " y se cargó al marco ", math.floor(next_frame/tamañoDePagina), ".")
+
+        # Remove from this page from area
+        page_in_swaparea = swapped_pages[p][page]
+        loadPageToSwap(page_in_swaparea,None, None)
+        del swapped_pages[p][page]
+
+    elif not algoritmo:
+        # if the page is already in memory,and we are using lru
+        # update lru queue to move the current page being
+        updateLRU(paginasProcesos[p][page])
+
+    # Adds read/write time
+    current_time += 1
+    # The address of the frame where the page is stored.
+    frame = paginasProcesos[p][page]
+    addr = frame + disp
+    print("Dirección virtual: ", d, ". ", end="", sep="")
+
+    print("Dirección real:", addr)
+
+# Load a process to memory (M).
+# n: number of bytes (1 <= n <= 2048)
+# p: process ID
+# Command example: P 534 5834
+def P(n, p):
+    global current_time, page_faults, total_swaps
+    print("Asignar", n, "bytes al proceso", p)
+
+    # Handle invalid cases
+    if n <= 0:
+        print("Error: el tamaño del proceso debe ser mayor que cero.")
+        print("No se ejecutará esta instrucción")
+        return
+    if n > 2048:
+        print("Error: el tamaño del proceso no puede exceder 2048 bytes.")
+        print("No se ejecutará esta instrucción")        
+        return
+    if p < 0:
+        print("Error: el identificador del proceso debe ser igual o mayor que cero.")
+        print("No se ejecutará esta instrucción")
+        return
+    if p in paginasProcesos:
+        print("Error: ya existe un proceso con ese identificador.")
+        print("No se ejecutará esta instrucción")
         return
     
-    #Direccion Fisica calculo
-    pagina = math.floor(d/16)
-    fraccion, i = math.modf(d/16)
-    desplazamiento = int(round(fraccion, 4) * 16) #Calculo desplazamiento en enteros
+    # Calculate how many pages are needed to load the process.
+    num_of_pages = math.ceil(n / tamañoDePagina)
 
-    if pagina not in procesosDePagina[p]:
-        if pagina not in paginasManejoSwap[p]:  #checa que la página exista 
-            print("ERROR: No hay direccion asociada al proceso: ",p)
-            return 
+    # Frames used.
+    frames = []
 
-        fallosDePaginaTotales += 1 #almacena el fallo de página
+    paginasProcesos[p] = {}
+    # Save process start time
+    paginasProcesos[p]["start_time"] = current_time
+    i = 0
+    current_page = 0
+    while current_page < num_of_pages:
 
-        frameParaSwapiar = encuentraFrameLibreEnMemoria()#checa si la memoria esta libre
+        # If there are no empty frames and
+        # the process hasn't been loaded completely.
+        if i >= memoria and current_page < num_of_pages:
+            
+            next_frame = chooseNext()
 
-        #Si la memoria no esta libre, escoge para el swap
-        if frameParaSwapiar == 0:
-            frameParaSwapiar = escojeFrameParaSwap()
-            cambio = swap(pagina,p,frameParaSwapiar)
-            if not cambio:
+            swapped = swap(current_page,p,next_frame)
+            if not swapped:
                 return
-            swapsTotales += 2 #añade al contador de swaps
-        else:
-            cargarPaginaFrame(frameParaSwapiar,p,pagina)
-            procesosDePagina[p][pagina] = frameParaSwapiar
-            tiempoMedida += 11 #se suma tiempo de cargar el frame 
-            if algoritmo:
-                #FIFO
-                #Si sea usa fifo, se agrega el frame a la cola de fifo
-                fifoSwap.insert(0, frameParaSwapiar) 
-            else:
-                #LRU
-                #Si sea usa lru, se agrega el frame a la cola de lru
-                lruSwap.insert(0, frameParaSwapiar)
-            swapsTotales += 1
-        print("La pagina: ",pagina," del proceso dado: ",p," en la posicion: ",paginasManejoSwap[p][pagina]," se localizó y cargo al marco: ",math.floor(frameParaSwapiar/16))
-        #Borra esta pagina de la areaDeSwap
-        paginaEnAreaDeSwap = paginasManejoSwap[p][pagina]
-        cargarPaginaSwap(paginaEnAreaDeSwap,None,None)
-        del paginasManejoSwap[p][pagina]
-    
-    elif not algoritmo:
-        #Si la página esta en memoria y se usa el algoritmo lru, entonces se actualiza la cola 
-        nuevoLru(procesosDePagina[p][pagina])
+            
+            # Store loaded frame to display and store
+            frames.append(math.floor(next_frame/tamañoDePagina))
 
-    tiempoMedida += 1 #Se añade tiempo de escritura y lectura
-    frame = procesosDePagina[p][pagina] #la direccion del frame donde la página se va a guardar
-    direccionReal = frame + desplazamiento
-    print("La direccion Virtual es: ",d)
-    print("La direccion Real es: ",direccionReal)
+            # Adds a swap in operation
+            total_swaps += 1
+
+            current_page += 1
+            
+            
+        # Find first/next empty frame.
+        while i < memoria:
+            if M[i] == None:
+                # Store loaded frame to display and store
+                frames.append(math.floor(i/tamañoDePagina))
+                paginasProcesos[p][current_page] = i
+                if(algoritmo):
+                    # If using fifo, add each used frame into the fifo queue
+                    fifo_next_swap.insert(0, i)
+                else:
+                    # If using lru, add each frame into the lru queue 
+                    lru_next_swap.insert(0, i)
+                # Load to this frame.
+                loadPageToFrame(i, p, current_page)
+
+                # Updates time, loading page to memory takes 1s
+                current_time += 10
+
+                current_page += 1
+                break
+            # Move to next frame.
+            i += tamañoDePagina
+
+    print("Se asignaron los marcos de página", frames, "al proceso", p)
+
+def L(p):
+    global fifo_next_swap, lru_next_swap, paginasProcesos, swapped_pages, current_time
+    print ("Liberar los marcos de página ocupados por el proceso ", p)
+    if (paginasProcesos[p] == None):
+        print ("El proceso ", p, " no se ha ejecutado")
+        print("No se ejecutará esta instrucción")
+        return
+    if "end_time" in paginasProcesos[p]:
+        print ("El proceso ", p, " ya fue liberado")
+        print("No se ejecutará esta instrucción")
+        return
+    # Frees up M
+    pages = paginasProcesos[p]
+
+    for key in pages:
+        if key!= "start_time":
+            loadPageToFrame(pages[key],None, None)
+
+    if algoritmo:
+        # Free up fifo queue of p's frames, only keeps frames that are not in the
+        #  process being freed up
+        fifo_next_swap = [i for i in fifo_next_swap if i not in pages.values()]
+    else:
+        # free up lru queue of p's frames, only keeps frames that are not in the 
+        #  process being freed up
+        lru_next_swap = [i for i in lru_next_swap if i not in pages.values()]
+
+    page_frames = [math.floor(pages[i]/tamañoDePagina ) for i in pages.keys() if i != 'start_time']
+    print ("Se liberan los marcos de página de memoria real:", page_frames)
+
+    # Frees up S
+    swapped = {}
+    if p in swapped_pages:
+        swapped = swapped_pages[p]
+
+        for key in swapped:
+            loadPageToSwap(swapped[key], None, None)
+
+        swapped_page_frames = [math.floor(i/tamañoDePagina) for i in swapped.values()]
+        print ("Se liberan los marcos", swapped_page_frames, "del área de swapping")
+        del swapped_pages[p]
+
+    # Update time, for each page freed up in memory and swapped, 0.1s pass ,(-1 because of "start_time")
+    current_time += (len(pages) + len(swapped) - 1) 
+
+    # Store current time for turnaround
+    paginasProcesos[p]["end_time"] = current_time
+
+def E():
+    print("Fin de las instrucciones")
+    exit()
 
 def F():
-    global procesosDePagina, paginasManejoSwap, lruSwap, fifoSwap, fallosDePaginaTotales, swapsTotales, tiempoMedida
-
-    numeroProcesos = 0 # contadoe de los proceso 
-    
-    turnAroundPromedio = 0 # se hace la suma del turnAroundActual y se divide entre en número de procesos
-
-    if len(procesosDePagina) == 0:
-        print("No hay procesos guardados, por ende no se puede calcular el reporte")
+    global paginasProcesos, swapped_pages, lru_next_swap, fifo_next_swap, page_faults, total_swaps, current_time
+    # Number of processes counted
+    processes = 0
+    # Variable to store current sum and then divide to calculate verage
+    average_turn_around = 0
+    if len(paginasProcesos) == 0:
+        print("No se tienen procesos en memoria.")
+        print("No se pueden calcular el reporte de estadísticas.")
         return
-    
-    valores = [i for i in procesosDePagina if "tiempoTerminacion" not in procesosDePagina[i]]
-    if len(valores) > 0:
-        print("Se liberan procesos que estan corriendo al momento")
+     
+    check_values = [i for i in paginasProcesos if "end_time" not in paginasProcesos[i] ]
+    if len(check_values) > 0:
+        print("Liberando procesos que aun siguen corriendo para calcular reporte de estadísticas.")
         print()
-        #Tiempo de Turnaround
-        for key in sorted(valores):
-            if "tiempoTerminacion" not in procesosDePagina[key]:
+        # Turnaround time
+        for key in sorted(check_values):
+            if "end_time" not in paginasProcesos[key] :
                 print("L(", key, ")")
                 L(key)
                 print()
+
+    print("Fin. Reporte de salida: ")
+    for key in sorted(paginasProcesos.keys()):
+
+        processes += 1
+        current_turn_around = (paginasProcesos[key]["end_time"] - paginasProcesos[key]["start_time"])/10
+
+        print("Proceso: ", key, "\t Turnaround time: ", current_turn_around, ".", sep="")
+        
+        average_turn_around += current_turn_around
     
-    print("Reporte: ")
-    for key in sorted(procesosDePagina.keys()):
-        numeroProcesos += 1
-        turnAroundActual = (procesosDePagina[key]["tiempoTerminacion"] - procesosDePagina[key]["tiempoInicio"])/10 #Tiempo final - inicial entre 10 para dar segundos
-
-        print("Proceso: ",key," Turnaround: ", turnAroundActual)
-
-        turnAroundPromedio += turnAroundActual
+    average_turn_around = average_turn_around / processes
     
-    turnAroundPromedio = turnAroundPromedio/numeroProcesos
+    # Avg turnaround
+    print("Turnaround promedio: ", average_turn_around, sep="")
 
-    print("El turnaround promedio es: ", turnAroundPromedio) #Turnaoround promedio 
+    # Page faults per process (when page not in memory is needed, NOT FROM P)
+    print("Page faults: ", page_faults, sep="")
 
-    print("Con: ",fallosDePaginaTotales," fallos de pagina") #fallos de página por proceso 
+    # Amount of Swap in / swap out operations
+    print("Operaciones de swap in/swap out: ", total_swaps, sep="")
 
-    print("numero de swaps: ", swapsTotales)#cantidad de operaciones swaps
+    # Reset variables
+    
+    # Queues
+    if algoritmo:   
+        # Queue of pages used for FIFO Strategy
+        fifo_next_swap = []
+    else:     
+        # Queue of pages used for LRU Strategy
+        lru_next_swap = []
+    
+    # Memory
+    M = [None] * memoria
+    # Swapping area
+    S = [None] * memoriaSwap
+    
+    # dictionaries
+    swapped_pages = {}
+    paginasProcesos = {}
 
+    # Data for statistics
 
-    #------------- Reseteo de variables --------------------------------------
-
-    memory = [None] * 2048 #Area de memoria
-
-    areaSwapping = [None] * 4096 #Area de Swapping
-
-    procesosDePagina = {} #Para organizar cada procesos de pagina segun un identificador "p" y por frames
-
-    paginasManejoSwap = {} #Para manejo del swap por frames
-
-    swapsTotales = 0 #contador de swaps totales
-
-    fallosDePaginaTotales = 0 #contador de fallos de página totales
-
-    tiempoMedida = 0 
-
-    #Colas 
-    if algoritmo:
-        fifoSwap = []
-    else:
-        lruSwap = []
+    # Current time for measurments
+    current_time = 0
+    # Amount of page faults that have occured
+    page_faults = 0
+    # Amount of swap in / swap out operations
+    total_swaps = 0
 
 def C(comentario):
     print("el camentario es: ",comentario)
