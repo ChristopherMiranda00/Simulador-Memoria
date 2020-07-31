@@ -97,8 +97,8 @@ def A(d, p, m):
         return
 
     pagina = math.floor(d / tamañoDePagina)
-    fraction, whole = math.modf(d / tamañoDePagina)
-    disp = int(round(fraction, 4) * 16)
+    calculo, i = math.modf(d / tamañoDePagina)
+    desplazamiento = int(round(calculo, 4) * 16)
     
     if pagina not in paginasProcesos[p]:
         if pagina not in paginasSwap[p]:
@@ -112,8 +112,8 @@ def A(d, p, m):
 
         if frame == -1:
             frame = escoje()     
-            swapped = swap(pagina,p,frame)
-            if not swapped:
+            cambio = intercambio(pagina,p,frame)
+            if not cambio:
                 return
             swapsTotales += 2
         else:
@@ -135,7 +135,7 @@ def A(d, p, m):
 
     tiempoMedida += 1
     frame = paginasProcesos[p][pagina]
-    addr = frame + disp
+    addr = frame + desplazamiento
     print("Dirección virtual: ", d, ". ", end="", sep="")
 
     print("Dirección real:", addr)
@@ -168,34 +168,34 @@ def P(n, p):
     paginasProcesos[p] = {}
     paginasProcesos[p]["start_time"] = tiempoMedida
     i = 0
-    current_page = 0
-    while current_page < num_of_pages:
+    usandoPagina = 0
+    while usandoPagina < num_of_pages:
 
-        if i >= memoria and current_page < num_of_pages:
+        if i >= memoria and usandoPagina < num_of_pages:
             
             frame = escoje()
 
-            swapped = intercambio(current_page,p,frame)
-            if not swapped:
+            cambio = intercambio(usandoPagina,p,frame)
+            if not cambio:
                 return
             
             frames.append(math.floor(frame/tamañoDePagina))
 
             swapsTotales += 1
 
-            current_page += 1
+            usandoPagina += 1
             
         while i < memoria:
             if M[i] == None:
                 frames.append(math.floor(i/tamañoDePagina))
-                paginasProcesos[p][current_page] = i
+                paginasProcesos[p][usandoPagina] = i
                 if(algoritmo):
                     fifoSwap.insert(0, i)
                 else:
                     lruSwap.insert(0, i)
-                paginaFrame(i, p, current_page)
+                paginaFrame(i, p, usandoPagina)
                 tiempoMedida += 10
-                current_page += 1
+                usandoPagina += 1
                 break
             i += tamañoDePagina
 
@@ -226,17 +226,17 @@ def L(p):
     page_frames = [math.floor(pages[i]/tamañoDePagina ) for i in pages.keys() if i != 'start_time']
     print ("Se liberan los marcos de página de memoria real:", page_frames)
 
-    swapped = {}
+    cambio = {}
     if p in paginasSwap:
-        swapped = paginasSwap[p]
+        cambio = paginasSwap[p]
 
-        for key in swapped:
-            paginaSwap(swapped[key], None, None)
+        for key in cambio:
+            paginaSwap(cambio[key], None, None)
 
-        swapped_page_frames = [math.floor(i/tamañoDePagina) for i in swapped.values()]
+        swapped_page_frames = [math.floor(i/tamañoDePagina) for i in cambio.values()]
         print ("Se liberan los marcos", swapped_page_frames, "del área de swapping")
         del paginasSwap[p]
-    tiempoMedida += (len(pages) + len(swapped) - 1) 
+    tiempoMedida += (len(pages) + len(cambio) - 1) 
     paginasProcesos[p]["end_time"] = tiempoMedida
 
 def E():
