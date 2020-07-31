@@ -25,6 +25,8 @@ def main():
             pasos.F()
         elif paso[0] == 'E': #Final del programa
             pasos.E()
+        elif paso[0] == 'C':
+            pasos.C(paso[1]) #paso[1] es un string
         elif paso[0] != 'C': #Comentarios
             print("No es una instruccion")
             exit()

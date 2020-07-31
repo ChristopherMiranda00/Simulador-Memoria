@@ -163,7 +163,7 @@ def P(n, p): #Paso[1] = bytes a asignar, Paso[2] = proceso
 
 #Esta instrucciones acaba el programa 
 def E():
-    print("Se acabaron las instrucciones del programa, adios") #Tiempo de despedida
+    print("Se acabaron las instrucciones del programa, vuelva pronto") #Tiempo de despedida
     exit()
 #L: Libera un espacio de memoria donde se encontraba un proceso
 #@p: El proceso a liberar 
@@ -285,3 +285,49 @@ def A(direccionVirtual, proceso, m):
     direccionReal = frame + desplazamiento
     print("La direccion Virtual es: ",direccionVirtual)
     print("La direccion Real es: ",direccionReal)
+
+def F():
+    global procesosDePagina, paginasManejoSwap, lruSwap, fifoSwap, fallosDePaginaTotales, swapsTotales, tiempoMedida
+
+    numeroProcesos = 0
+    turnAroundPromedio = 0
+    if len(procesosDePagina) == 0:
+        print("No hay procesos guardados, por ende no se puede calcular el reporte")
+        return
+    valores = [i for i in procesosDePagina if "tiempoTerminacion" not in procesosDePagina[i]]
+    if len(valores) > 0:
+        print("Se liberan procesos que estan corriendo al momento")
+        for key in sorted(valores):
+            if "tiempoTerminacion" not in procesosDePagina[key]:
+                print("L(", key, ")")
+                L(key)
+                print()
+    
+    print("Reporte: ")
+    for key in sorted(procesosDePagina.keys()):
+        numeroProcesos += 1
+        turnAroundActual = (procesosDePagina[key]["tiempoTerminacion"] - procesosDePagina[key]["tiempoInicio"])/10 #Teimpo final - inicial entre 10 para dar segundos
+        print("Proceso: ",key," Turnaround: ", turnAroundActual)
+        turnAroundPromedio += turnAroundActual
+    
+    turnAroundPromedio = turnAroundPromedio/numeroProcesos
+
+    print("El turnaround promedio es: ", turnAroundPromedio)
+    print("Con: ",fallosDePaginaTotales," fallos de pagina")
+    print("numero de swaps: ", swapsTotales)
+
+    memory = [None] * 2048 #Area de memoria
+    areaSwapping = [None] * 4096 #Area de Swapping
+    procesosDePagina = {} #Para organizar cada procesos de pagina segun un identificador "p" y por frames
+    paginasManejoSwap = {} #Para manejo del swap por frames
+    swapsTotales = 0
+    fallosDePaginaTotales = 0
+    tiempoMedida = 0
+
+    if algoritmo:
+        fifoSwap = []
+    else:
+        lruSwap = []
+
+def C(comentario):
+    print("el camentario es: ",comentario)
