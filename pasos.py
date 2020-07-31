@@ -126,8 +126,8 @@ def A(d, p, m):
                 lruSwap.insert(0, frame)
             swapsTotales += 1
         print("Se localizó la página ", pagina, " del proceso ", p, " que estaba en la posición ", paginasSwap[p][pagina], " y se cargó al marco ", math.floor(frame/tamañoDePagina), ".")
-        page_in_swaparea = paginasSwap[p][pagina]
-        paginaSwap(page_in_swaparea,None, None)
+        paginaSwap = paginasSwap[p][pagina]
+        paginaSwap(paginaSwap,None, None)
         del paginasSwap[p][pagina]
 
     elif not algoritmo:
@@ -135,10 +135,10 @@ def A(d, p, m):
 
     tiempoMedida += 1
     frame = paginasProcesos[p][pagina]
-    addr = frame + desplazamiento
+    direccionReal = frame + desplazamiento
     print("Dirección virtual: ", d, ". ", end="", sep="")
 
-    print("Dirección real:", addr)
+    print("Dirección real:", direccionReal)
 
 def P(n, p):
     global tiempoMedida, fallosDePagina, swapsTotales
@@ -161,17 +161,17 @@ def P(n, p):
         print("No se ejecutará esta instrucción")
         return
     
-    num_of_pages = math.ceil(n / tamañoDePagina)
+    numeroPaginas = math.ceil(n / tamañoDePagina)
 
     frames = []
 
     paginasProcesos[p] = {}
-    paginasProcesos[p]["start_time"] = tiempoMedida
+    paginasProcesos[p]["tiempoInicial"] = tiempoMedida
     i = 0
     usandoPagina = 0
-    while usandoPagina < num_of_pages:
+    while usandoPagina < numeroPaginas:
 
-        if i >= memoria and usandoPagina < num_of_pages:
+        if i >= memoria and usandoPagina < numeroPaginas:
             
             frame = escoje()
 
@@ -208,22 +208,22 @@ def L(p):
         print ("El proceso ", p, " no se ha ejecutado")
         print("No se ejecutará esta instrucción")
         return
-    if "end_time" in paginasProcesos[p]:
+    if "tiempoFinal" in paginasProcesos[p]:
         print ("El proceso ", p, " ya fue liberado")
         print("No se ejecutará esta instrucción")
         return
-    pages = paginasProcesos[p]
+    paginas = paginasProcesos[p]
 
-    for key in pages:
-        if key!= "start_time":
-            paginaFrame(pages[key],None, None)
+    for key in paginas:
+        if key!= "tiempoInicial":
+            paginaFrame(paginas[key],None, None)
 
     if algoritmo:
-        fifoSwap = [i for i in fifoSwap if i not in pages.values()]
+        fifoSwap = [i for i in fifoSwap if i not in paginas.values()]
     else:
-        lruSwap = [i for i in lruSwap if i not in pages.values()]
+        lruSwap = [i for i in lruSwap if i not in paginas.values()]
 
-    page_frames = [math.floor(pages[i]/tamañoDePagina ) for i in pages.keys() if i != 'start_time']
+    page_frames = [math.floor(paginas[i]/tamañoDePagina ) for i in paginas.keys() if i != 'tiempoInicial']
     print ("Se liberan los marcos de página de memoria real:", page_frames)
 
     cambio = {}
@@ -236,8 +236,8 @@ def L(p):
         swapped_page_frames = [math.floor(i/tamañoDePagina) for i in cambio.values()]
         print ("Se liberan los marcos", swapped_page_frames, "del área de swapping")
         del paginasSwap[p]
-    tiempoMedida += (len(pages) + len(cambio) - 1) 
-    paginasProcesos[p]["end_time"] = tiempoMedida
+    tiempoMedida += (len(paginas) + len(cambio) - 1) 
+    paginasProcesos[p]["tiempoFinal"] = tiempoMedida
 
 def E():
     print("Fin de las instrucciones")
@@ -252,12 +252,12 @@ def F():
         print("No se pueden calcular el reporte de estadísticas.")
         return
      
-    check_values = [i for i in paginasProcesos if "end_time" not in paginasProcesos[i] ]
+    check_values = [i for i in paginasProcesos if "tiempoFinal" not in paginasProcesos[i] ]
     if len(check_values) > 0:
         print("Liberando procesos que aun siguen corriendo para calcular reporte de estadísticas.")
         print()
         for key in sorted(check_values):
-            if "end_time" not in paginasProcesos[key] :
+            if "tiempoFinal" not in paginasProcesos[key] :
                 print("L(", key, ")")
                 L(key)
                 print()
@@ -266,7 +266,7 @@ def F():
     for key in sorted(paginasProcesos.keys()):
 
         processes += 1
-        current_turn_around = (paginasProcesos[key]["end_time"] - paginasProcesos[key]["start_time"])/10
+        current_turn_around = (paginasProcesos[key]["tiempoFinal"] - paginasProcesos[key]["tiempoInicial"])/10
 
         print("Proceso: ", key, "\t Turnaround time: ", current_turn_around, ".", sep="")
         
