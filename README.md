@@ -88,7 +88,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - main.py `28 líneas`
     - analizador.py `64 líneas`
     - pasos.py `231 líneas`
-    - prueba.txt `11 líneas
+    - prueba.txt `11 líneas`
  
  
  
