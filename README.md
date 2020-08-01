@@ -4,7 +4,7 @@
 
 ##### Integrantes:
 1. *CHRISTOPHER LUIS MIRANDA VANEGAS* - *A01022676* - *Campus Santa Fe*
-2. *Mike* - *A0* - *Campus *
+2. *Miguel Alejandro Hernandez Garcia* - *A01654722* - *Campus Ciudad de México*
 3. *Jesús Aristóteles Pacheco Ramírez* - *A001262378* - *Campus Guadalajara*
 
 ---
