@@ -44,7 +44,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     Una vez que se haya descargado el repositorio, se tendrán la carpeta de manera local con los siguientes archivos:
      
      - Proyecto Final-1.pdf
-     - analizado.py
+     - analizador.py
      - pasos.py
      - main.py
 
@@ -72,7 +72,14 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
  
  ## 2. Información adicional de los programas: 
  
+ 1. Lenguaje de programación utilizado: `python `
  
+ 2. Número de total de líneas de los programas: 
+    - main.py `34 líneas`
+    - analizador.py `89 líneas`
+    - pasos.py `359 líneas`
+ 
+ 3. Número total de lneas sin comentarios ni espacios de los programas : `
  
 
  
