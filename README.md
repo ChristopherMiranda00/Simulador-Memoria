@@ -3,11 +3,9 @@
 #### Materia: *Sistemas Operativos*
 
 ##### Integrantes:
-1. *LUIS DANIEL ROA GONZÁLEZ* - *A01021960* - *Campus Santa Fe*
-2. *KATIA YARETH BELLIDO LÓPEZ* - *A01023638* - *Campus Santa Fe*
-3. *CONSTANZA GÓMEZ SÁNCHEZ* - *A01026717* - *Campus Santa Fe*
-4. *CHRISTOPHER LUIS MIRANDA VANEGAS* - *A01022676* - *Campus Santa Fe*
-5. *MIGUEL MONTERRUBIO BANDERA* - *A01022153* - *Campus Santa Fe*
+1. *CHRISTOPHER LUIS MIRANDA VANEGAS* - *A01022676* - *Campus Santa Fe*
+2. *Mike* - *A0* - *Campus *
+3. *Aristo* - *A0* - *Campus *
 
 ---
 ## 1. Aspectos generales
