@@ -72,7 +72,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
  
  ## 2. Información adicional de los programas: 
  
- 1. Lenguaje de programación utilizado: `python `
+ 1. Lenguaje de programación utilizado: `python 3.7.5 `
  
  2. Número de total de líneas de los programas: 
     - main.py `34 líneas`
@@ -83,6 +83,8 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - main.py `28 líneas`
     - analizador.py `64 líneas`
     - pasos.py `231 líneas`
+ 
+ 
  
 
  
