@@ -23,12 +23,10 @@ los algoritmos de administración de memoria vistos en clase
 
 El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos por usted:
 ```
-El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos por usted:
-```
 - / 			        # Raíz de todo el proyecto
     - README.md			# Archivo con los datos del proyecto (este archivo)
     - Proyecto Final-1.pdf	# Documento PDF con los instrucciones del documento 
     - analizador.py			  # Programa que realiza las operaciones
     - main.py		      # Programa con los incisos de las intrucciones
     - pasos.py		  # Programa que maneja instrucciones generales
-- /
+```
