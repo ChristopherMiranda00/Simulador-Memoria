@@ -69,10 +69,6 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
  4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo .txt a la terminal cuando este sea pedido .
 
 
- 5. Para poder el correr el proyecto de manera local, es necesario correr el siguiente comando:
-    
-    `
-    npm start
-    `
+ 5. El programa empezará a correr y se mostrará el output pedido
 
  
