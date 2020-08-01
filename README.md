@@ -66,7 +66,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
           main.py lru 
           `
 
- 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `.txt a la terminal cuando este sea pedido .
+ 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `.txt` a la terminal cuando este sea pedido .
 
  5. El programa empezará a correr y se mostrará el output pedido
  
