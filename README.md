@@ -59,10 +59,11 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
       main.py (algoritmo a usar, fifo o lru)
       `
   
-  Ejemplo: 
-      `
-      main.py lru 
-      `
+      Ejemplo: 
+      
+          `
+          main.py lru 
+          `
 
  4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo .txt a la terminal cuando este sea pedido .
 
