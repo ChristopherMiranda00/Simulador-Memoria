@@ -1,4 +1,4 @@
-# *Proyecto Final - Simulador de Mememoria*
+# *Proyecto Final - Simulador de Memoria*
 ---
 #### Materia: *Sistemas Operativos*
 
