@@ -10,9 +10,12 @@
 ---
 ## 1. Aspectos generales
 
-Las orientaciones de la tarea se encuentran disponibles en la plataforma **Canvas**.
+Las orientaciones de la tarea se encuentran disponibles en el siguiente link https://github.com/ChristopherMiranda00/Simulador-Memoria/blob/master/Proyecto%20Final-1.pdf.
 
 Este documento es una guía sobre qué información debe entregar como parte del proyecto, qué requerimientos técnicos debe cumplir y la estructura que debe seguir para organizar su entrega.
+
+Objetivo: Ejercicio de programación para mostrar su comprensión de algunos de
+los algoritmos de administración de memoria vistos en clase
 
 ### 1.1 Requerimientos técnicos
 
