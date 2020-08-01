@@ -50,8 +50,20 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
     También el [README.md](README.md) que se encuentra en la carpeta raíz.
 
 
-  3. Una vez que tenga el repositorio en su computadora, 
-    `
+2. Una vez que tenga el repositorio en su computadora, abrir la carpeta del proyecto en una terminal nueva. 
+  
+ 
+3. En la terminal escribir el siguiente comando y darle enter:
+
+  `
+  main.py (algoritmo a usar, fifo o lru)
+  
+  Ejemplo: 
+  main.py lru 
+  `
+
+ 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo .txt a la terminal cuando este sea pedido .
+
 
  5. Para poder el correr el proyecto de manera local, es necesario correr el siguiente comando:
     
