@@ -23,14 +23,14 @@ los algoritmos de administración de memoria vistos en clase
 
 El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos por usted:
 ```
-- / 			        # Raíz de todo el proyecto
-    - README.md			# Archivo con los datos del proyecto (este archivo)
+- /  # Raíz de todo el proyecto
+    - README.md			    # Archivo con los datos del proyecto (este archivo)
     - Proyecto Final-1.pdf	# Documento PDF con los instrucciones del documento 
-    - analizador.py			  # Programa que realiza las operaciones
-    - main.py		      # Programa con los incisos de las intrucciones
-    - pasos.py		  # Programa que maneja instrucciones generales
-    - Reportes       # Reportes y comparación con los diferentes algoritmos
-    - prueba.txt    #Archivo con las instrucciones que usamos como prueba 
+    - analizador.py			# Programa que realiza las operaciones
+    - main.py		        # Programa con los incisos de las intrucciones
+    - pasos.py		        # Programa que maneja instrucciones generales
+    - Reportes              # Reportes y comparación con los diferentes algoritmos
+    - prueba.txt            #Archivo con las instrucciones que usamos como prueba 
 ```
 
 ### 1.3 Como correr el proyecto
@@ -96,6 +96,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
 1. Para acceder a las imágenes se necesita accesar a la carpeta de `Reporte`
 
 2. Dentro de la carpeta aparecen 6 imágenes:
+```
     - FIFO1.jpeg
         Ejemplo de como correr con el algoritmo FIFO. 
     - FIFO2.jpeg
@@ -108,6 +109,7 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
         El despliegue de datos por algoritmo LRU.
     - LRU3.jpeg
         Estadisticas del programa (TURNAROUND, FALLOS DE PAGINA, NUMERO DE OPERACIONES DE SWAP).
+```
     
     
 
