@@ -33,7 +33,7 @@ El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos p
 
 ### 1.3 Como correr el proyecto
 
-Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](https://python.uptodown.com/windows).
+Contar en tu computadora con python, de ser necesario instalarlo de [aquí](https://python.uptodown.com/windows).
 
 1. Primero, se necesita clonar el repositorio, con el siguiente comando:
 
@@ -66,9 +66,13 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
           main.py lru 
           `
 
- 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo .txt a la terminal cuando este sea pedido .
-
+ 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `.txt a la terminal cuando este sea pedido .
 
  5. El programa empezará a correr y se mostrará el output pedido
+ 
+ ## 2. Información adicional de los programas: 
+ 
+ 
+ 
 
  
