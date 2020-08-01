@@ -29,6 +29,7 @@ El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos p
     - analizador.py			  # Programa que realiza las operaciones
     - main.py		      # Programa con los incisos de las intrucciones
     - pasos.py		  # Programa que maneja instrucciones generales
+    - Reportes       # Reportes y comparación con los diferentes algoritmos
 ```
 
 ### 1.3 Como correr el proyecto
