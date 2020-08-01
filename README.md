@@ -30,3 +30,9 @@ El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos p
     - main.py		      # Programa con los incisos de las intrucciones
     - pasos.py		  # Programa que maneja instrucciones generales
 ```
+
+### 1.3 Como correr el proyecto
+
+1.- Abrir el proyecto en una terminal nueva
+2.- Escribir main.py seguido de un espacio y escrbir con que algoritmo quieres correrlo "fifo" o "lru" sin comillas
+3.- Te pedira un archivo de instrucciones, solo arrastra el archivo a la terminal y presiona enter
