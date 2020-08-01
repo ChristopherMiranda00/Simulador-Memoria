@@ -91,19 +91,24 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - prueba.txt `11 líneas`
  
  
- ## Reporte con la comparación de algoritmos 
+ ## 3. Reporte con la comparación de algoritmos 
  
 1. Para acceder a las imágenes se necesita accesar a la carpeta de `Reporte`
 
 2. Dentro de la carpeta aparecen 6 imágenes:
     - FIFO1.jpeg
+        Ejemplo de como correr con el algoritmo FIFO. 
     - FIFO2.jpeg
+        El despliegue de datos por algoritmo FIFO.
     - FIFO3.jpeg
+        Estadisticas del programa (TURNAROUND, FALLOS DE PAGINA, NUMERO DE OPERACIONES DE SWAP).
     - LRU1.jpeg
+        Ejemplo de como correr con el algoritmo LRU. 
     - LRU2.jpeg
+        El despliegue de datos por algoritmo LRU.
     - LRU3.jpeg
+        Estadisticas del programa (TURNAROUND, FALLOS DE PAGINA, NUMERO DE OPERACIONES DE SWAP).
     
-3. L
     
 
  
