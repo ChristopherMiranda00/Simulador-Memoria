@@ -30,11 +30,12 @@ A continuación se mencionan los requerimientos técnicos mínimos del proyecto,
 
 El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos por usted:
 ```
+El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos por usted:
+```
 - / 			        # Raíz de todo el proyecto
     - README.md			# Archivo con los datos del proyecto (este archivo)
-    - frontend			# Carpeta con la solución del frontend (Web app)
-    - backend			  # Carpeta con la solución del backend (CMS)
-    - api			      # Carpeta con la solución de la API
-    - datasets		  # Carpeta con los datasets y recursos utilizados (csv, json, audio, videos, entre otros)
-    - dbs			      # Carpeta con los modelos, catálogos y scripts necesarios para generar las bases de datos
-    - docs			    # Carpeta con la documentación del proyecto
+    - Proyecto Final-1.pdf	# Documento PDF con los instrucciones del documento 
+    - analizador.py			  # Programa que realiza las operaciones
+    - main.py		      # Programa con los incisos de las intrucciones
+    - pasos.py		  # Programa que maneja instrucciones generales
+- /
