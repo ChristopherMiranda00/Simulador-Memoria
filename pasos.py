@@ -14,6 +14,53 @@ tiempoMedida = 0 #variable para medir el tiempo y luego calcular el rendimiento
 fallosDePagina = 0 #contador de fallos de página totales
 swapsTotales = 0 #contador de swaps realizados 
 
+#intercambio: pone la página del proceso nuevo en la memoria y pone la página actual en el frame correspondiente en el área de swap 
+#@nueva: número de pagina del nuevo frame
+#@procesoActualizar: id del proceso del nuevo frame
+#@frame: spacio en memoria que corresponde a donde el nuevo proceso se pondrá 
+def intercambio(nueva, procesoActualizar, frame):
+    global tiempoMedida, fallosDePagina
+
+    procesoAntes, paginaAntes = M[frame] #obtine datos del proceso y la página anterior
+
+    sePuedeHacerSwap = encuentraFrameEnSwap() #Encuentra el siguiente frame disponible 
+    if sePuedeHacerSwap == -1:
+        return False
+
+    print("La página ", paginaAntes, " del proceso ", procesoAntes, " haciendo swapping al marco: ", math.floor(sePuedeHacerSwap/tamañoDePagina), " del área de swapping.")
+
+    paginaSwap(sePuedeHacerSwap, procesoAntes, paginaAntes) #Carga la página swapiada en la memoria Swap
+
+    if procesoAntes not in paginasSwap: #Si el proceso no esta en paginasManejoSwap, entonces la añade
+        paginasSwap[procesoAntes] = {}
+
+    #Guarda en paginasManejoSwap donde el proceso se guardar en swap
+    paginasSwap[procesoAntes][paginaAntes] = sePuedeHacerSwap
+
+    del paginasProcesos[procesoAntes][paginaAntes] #Quita los frames pasados de paginasManejoSwap
+
+    #Carga la página al frame 
+    paginaFrame(frame, procesoActualizar, nueva)
+    paginasProcesos[procesoActualizar][nueva] = frame
+    
+    tiempoMedida += 20  #incrementa el tiempo 2 segundos 
+    return True
+
+
+#escoge:si es FIFO O LRU, escoge que frame remover de memoria y colocar en swap
+def escoje():
+    if(algoritmo):#FIFO = true 
+        #Guarda el siguiente frame de la cola de FIFO
+        frame = fifoSwap.pop()
+        #Lo añade a la cola de swaps de FIFO
+        fifoSwap.insert(0, frame)
+    else: #LRU
+        #Guarda el siguiente frame de la cola de LRU
+        frame = lruSwap.pop()
+        #Lo añade a la cola de swaps de LRU
+        lruSwap.insert(0, frame)
+    return frame
+
 #encuentraFrameEnSwap: 
 def encuentraFrameEnSwap():
     for i in range(0,memoriaSwap,tamañoDePagina): # (0, 2048,16)
@@ -49,52 +96,6 @@ def paginaSwap(i, p, pagina):
     val = None if p == None and pagina == None else [p,pagina]
     for j in range(0, tamañoDePagina): #tamañoDePagina =16
         S[i + j] = val
-
-#intercambio: pone la página del proceso nuevo en la memoria y pone la página actual en el frame correspondiente en el área de swap 
-#@nueva: número de pagina del nuevo frame
-#@procesoActualizar: id del proceso del nuevo frame
-#@frame: spacio en memoria que corresponde a donde el nuevo proceso se pondrá 
-def intercambio(nueva, procesoActualizar, frame):
-    global tiempoMedida, fallosDePagina
-
-    procesoAntes, paginaAntes = M[frame] #obtine datos del proceso y la página anterior
-
-    sePuedeHacerSwap = encuentraFrameEnSwap() #Encuentra el siguiente frame disponible 
-    if sePuedeHacerSwap == -1:
-        return False
-
-    print("La página ", paginaAnterior, " del proceso ", procesoAnterior, " haciendo swapping al marco: ", math.floor(sePuedeHacerSwap/tamañoDePagina), " del área de swapping.")
-
-    paginaSwap(sePuedeHacerSwap, procesoAntes, paginaAntes) #Carga la página swapiada en la memoria Swap
-
-    if procesoAntes not in paginasSwap: #Si el proceso no esta en paginasManejoSwap, entonces la añade
-        paginasSwap[procesoAntes] = {}
-
-    #Guarda en paginasManejoSwap donde el proceso se guardar en swap
-    paginasSwap[procesoAntes][paginaAntes] = sePuedeHacerSwap
-
-    del paginasProcesos[procesoAntes][paginaAntes] #Quita los frames pasados de paginasManejoSwap
-
-    #Carga la página al frame 
-    paginaFrame(frame, procesoActualizar, nueva)
-    paginasProcesos[procesoActualizar][nueva] = frame
-    
-    tiempoMedida += 20  #incrementa el tiempo 2 segundos 
-    return True
-
-#escoge:si es FIFO O LRU, escoge que frame remover de memoria y colocar en swap
-def escoje():
-    if(algoritmo):#FIFO = true 
-        #Guarda el siguiente frame de la cola de FIFO
-        frame = fifoSwap.pop()
-        #Lo añade a la cola de swaps de FIFO
-        fifoSwap.insert(0, frame)
-    else: #LRU
-        #Guarda el siguiente frame de la cola de LRU
-        frame = lruSwap.pop()
-        #Lo añade a la cola de swaps de LRU
-        lruSwap.insert(0, frame)
-    return frame
 
 #ActualizarLRU 
 #@pagina: que se quiere mover de lugar 
