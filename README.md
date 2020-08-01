@@ -46,6 +46,7 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
      - Proyecto Final-1.pdf
      - analizado.py
      - pasos.py
+     - main.py
 
     También el [README.md](README.md) que se encuentra en la carpeta raíz.
 
