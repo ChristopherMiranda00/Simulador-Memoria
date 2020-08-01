@@ -79,7 +79,10 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - analizador.py `89 líneas`
     - pasos.py `359 líneas`
  
- 3. Número total de lneas sin comentarios ni espacios de los programas : `
+ 3. Número total de lneas sin comentarios ni espacios de los programas :
+    - main.py `28 líneas`
+    - analizador.py `64 líneas`
+    - pasos.py `231 líneas`
  
 
  
