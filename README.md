@@ -91,6 +91,11 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - prueba.txt `11 líneas`
  
  
+ ## Reporte con la comparación de algoritmos 
  
+1. Para acceder a las imágenes se necesita accesar a la carpeta de `Reporte`
+         `
+         cd Reporte
+         . 
 
  
