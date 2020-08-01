@@ -99,9 +99,6 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - FIFO1.jpeg
     - FIFO2.jpeg
     - FIFO3.jpeg
-        
-        
-        ##LRU imágenes 
     - LRU1.jpeg
     - LRU2.jpeg
     - LRU3.jpeg
