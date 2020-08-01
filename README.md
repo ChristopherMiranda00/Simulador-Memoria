@@ -10,9 +10,9 @@
 ---
 ## 1. Aspectos generales
 
-Las orientaciones de la tarea se encuentran disponibles en el siguiente link https://github.com/ChristopherMiranda00/Simulador-Memoria/blob/master/Proyecto%20Final-1.pdf.
+Las orientaciones de la tarea se encuentran disponibles en el siguiente link https://github.com/ChristopherMiranda00/Simulador-Memoria
 
-Este documento es una guía sobre qué información debe entregar como parte del proyecto, qué requerimientos técnicos debe cumplir y la estructura que debe seguir para organizar su entrega.
+Este documento es una guía sobre qué información debe entregar como parte del proyecto, y la estructura que debe seguir para organizar su entrega.
 
 ### 1.1 Objetivo
 Ejercicio de programación para mostrar su comprensión de algunos de
@@ -33,6 +33,30 @@ El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos p
 
 ### 1.3 Como correr el proyecto
 
-1.- Abrir el proyecto en una terminal nueva
-2.- Escribir main.py seguido de un espacio y escrbir con que algoritmo quieres correrlo "fifo" o "lru" sin comillas
-3.- Te pedira un archivo de instrucciones, solo arrastra el archivo a la terminal y presiona enter
+Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](https://python.uptodown.com/windows).
+
+1. Primero, se necesita clonar el repositorio, con el siguiente comando:
+
+   ```
+    git clone https://github.com/ChristopherMiranda00/Simulador-Memoria
+    ```
+
+    Una vez que se haya descargado el repositorio, se tendrán la carpeta de manera local con los siguientes archivos:
+     
+     - Proyecto Final-1.pdf
+     - analizado.py
+     - pasos.py
+
+    También el [README.md](README.md) que se encuentra en la carpeta raíz.
+
+
+  3. Una vez que tenga el repositorio en su computadora, 
+    `
+
+ 5. Para poder el correr el proyecto de manera local, es necesario correr el siguiente comando:
+    
+    `
+    npm start
+    `
+
+ 
