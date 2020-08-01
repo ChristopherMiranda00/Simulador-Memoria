@@ -30,6 +30,7 @@ El proyecto debe seguir la siguiente estructura de carpetas, la cual generamos p
     - main.py		      # Programa con los incisos de las intrucciones
     - pasos.py		  # Programa que maneja instrucciones generales
     - Reportes       # Reportes y comparación con los diferentes algoritmos
+    - prueba.txt    #Archivo con las instrucciones que usamos como prueba 
 ```
 
 ### 1.3 Como correr el proyecto
@@ -48,6 +49,8 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
      - analizador.py
      - pasos.py
      - main.py
+     - prueba.txt
+     - Reportes
 
     También el [README.md](README.md) que se encuentra en la carpeta raíz.
 
@@ -67,9 +70,9 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
           main.py lru 
           `
 
- 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `.txt` a la terminal cuando este sea pedido .
+ 4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `prueba.txt` a la terminal cuando este sea pedido .
 
- 5. El programa empezará a correr y se mostrará el output pedido
+ 5. El programa empezará a correr y se mostrará el output pedido. 
  
  ## 2. Información adicional de los programas: 
  
@@ -79,11 +82,13 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
     - main.py `34 líneas`
     - analizador.py `89 líneas`
     - pasos.py `359 líneas`
+    - prueba.txt `11 líneas`
  
  3. Número total de lneas sin comentarios ni espacios de los programas :
     - main.py `28 líneas`
     - analizador.py `64 líneas`
     - pasos.py `231 líneas`
+    - prueba.txt `11 líneas
  
  
  
