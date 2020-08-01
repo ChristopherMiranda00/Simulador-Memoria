@@ -66,9 +66,9 @@ Contar en tu computadora con python, de ser necesario instalarlo de [aquí](http
   
       Ejemplo: 
       
-          `
+          
           main.py lru 
-          `
+          
 
  4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo `prueba.txt` a la terminal cuando este sea pedido .
 
