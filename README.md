@@ -55,12 +55,14 @@ Contar en tu computadora con python, dde ser necesario instalarlo de [aquí](htt
  
 3. En la terminal escribir el siguiente comando y darle enter:
 
-  `
-  main.py (algoritmo a usar, fifo o lru)
+      `
+      main.py (algoritmo a usar, fifo o lru)
+      `
   
   Ejemplo: 
-  main.py lru 
-  `
+      `
+      main.py lru 
+      `
 
  4. El programa pedirá un archivo de instruciones, se tiene que arrastrar el archivo .txt a la terminal cuando este sea pedido .
 
